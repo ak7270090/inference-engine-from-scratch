@@ -1,0 +1,86 @@
+[
+  {
+    "workload": "short_chat",
+    "concurrency": 1,
+    "request_count": 8,
+    "error_count": 0,
+    "total_completion_tokens": 256,
+    "wall_seconds": 205.37753590010107,
+    "total_tokens_per_second": 1.2464849131529288,
+    "per_user_tokens_per_second": 1.2833642338224136,
+    "ttft": {
+      "p50_ms": 675.7811499992386,
+      "p95_ms": 796.0229750722647,
+      "p99_ms": 806.0507551208138,
+      "mean_ms": 653.8145250233356
+    },
+    "inter_token": {
+      "p50_ms": 771.5512999566272,
+      "p95_ms": 1146.5970301302154,
+      "p99_ms": 1908.4273000503892,
+      "mean_ms": 807.0253241927393
+    },
+    "end_to_end": {
+      "p50_ms": 24874.36840008013,
+      "p95_ms": 32825.68788997596,
+      "p99_ms": 35207.41733797593,
+      "mean_ms": 25672.15833751834
+    }
+  },
+  {
+    "workload": "short_chat",
+    "concurrency": 2,
+    "request_count": 8,
+    "error_count": 0,
+    "total_completion_tokens": 256,
+    "wall_seconds": 220.07001549983397,
+    "total_tokens_per_second": 1.163266151540727,
+    "per_user_tokens_per_second": 1.1480667883919056,
+    "ttft": {
+      "p50_ms": 28551.49290000554,
+      "p95_ms": 30890.897320082877,
+      "p99_ms": 31033.50882408442,
+      "mean_ms": 25132.867762527894
+    },
+    "inter_token": {
+      "p50_ms": 830.2494999952614,
+      "p95_ms": 1201.455230009742,
+      "p99_ms": 1374.2845241026953,
+      "mean_ms": 864.0019786281271
+    },
+    "end_to_end": {
+      "p50_ms": 55868.81400004495,
+      "p95_ms": 59755.545634927694,
+      "p99_ms": 60190.55920693325,
+      "mean_ms": 51917.98641247442
+    }
+  },
+  {
+    "workload": "short_chat",
+    "concurrency": 4,
+    "request_count": 8,
+    "error_count": 0,
+    "total_completion_tokens": 256,
+    "wall_seconds": 202.02811119984835,
+    "total_tokens_per_second": 1.2671503905056167,
+    "per_user_tokens_per_second": 1.2819900197996335,
+    "ttft": {
+      "p50_ms": 74680.86399999447,
+      "p95_ms": 76278.902185068,
+      "p99_ms": 76434.85179709503,
+      "mean_ms": 56921.87983749318
+    },
+    "inter_token": {
+      "p50_ms": 774.8540500178933,
+      "p95_ms": 1028.8217149442062,
+      "p99_ms": 1144.3545260024257,
+      "mean_ms": 790.8390169341733
+    },
+    "end_to_end": {
+      "p50_ms": 99169.82839989942,
+      "p95_ms": 102135.04836502252,
+      "p99_ms": 102907.30183306849,
+      "mean_ms": 81438.82537496393
+    }
+  }
+]

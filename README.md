@@ -18,8 +18,8 @@ folder. A shared harness measures every phase and compares it with vLLM on the s
 
 | Phase | Optimization | Status |
 |---|---|---|
-| 0 | Harness and vLLM baseline | in progress |
-| 1 | Naive generation | planned |
+| 0 | Harness and vLLM baseline | done |
+| 1 | Naive generation | done on CPU, T4 run next |
 | 2 | KV cache | planned |
 | 3 | Continuous batching | planned |
 | 4 | Paged KV cache | planned |
