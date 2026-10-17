@@ -27,6 +27,27 @@ folder. A shared harness measures every phase and compares it with vLLM on the s
 | 6 | Speculative decoding | planned |
 | 7 | int8 weights and CUDA graphs | planned |
 
+## Target to chase: vLLM on a Kaggle T4
+
+vLLM 0.31.0, Qwen3-0.6B fp16, one T4. Prefix caching and chunked prefill were on (the defaults),
+with CUDA graphs and the Triton attention backend. This is the `t4` workload scale. Full
+results: [docs/results/vllm-t4/](docs/results/vllm-t4/results/harness-report.md).
+
+| Users (short_chat: 64 in / 128 out) | Total tok/s | Per-user tok/s | TTFT p50 | ITL p50 |
+|---|---|---|---|---|
+| 1 | 143 | 145 | 24 ms | 6.9 ms |
+| 4 | 478 | 123 | 39 ms | 8.2 ms |
+| 16 | 1,142 | 73 | 52 ms | 13.6 ms |
+| 64 | 1,928 | 31 | 145 ms | 31.7 ms |
+
+![vLLM short_chat: throughput against inter-token latency](docs/results/vllm-t4/results/short_chat/concurrency-sweep.png)
+
+- Batching gives 13.6× more total throughput at 64 users, and each user's stream slows from
+  145 to 31 tok/s.
+- Prefix caching cuts TTFT from 86 to 23 ms when 512 of 544 prompt tokens are shared.
+- Long-prompt interference **fails even for vLLM**. While 1,024-token prompts arrive, other users'
+  ITL p99 rises from 8 to 193 ms (24×). Phase 5 (chunked prefill with a token budget) targets this.
+
 ## Every engine speaks the same API
 
 - `POST /v1/completions`: OpenAI-style. The prompt can be text or a list of token IDs.
