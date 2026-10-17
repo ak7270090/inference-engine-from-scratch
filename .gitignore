@@ -1,0 +1,22 @@
+# secrets
+.env
+kaggle.json
+access_token
+
+# plan stays local (same as rate-limiting-patterns)
+PLAN.md
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# model weights and large outputs
+*.safetensors
+*.bin
+hf-cache/
