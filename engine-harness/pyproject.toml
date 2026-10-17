@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "engine-harness"
+version = "0.1.0"
+description = "Phase 0: one set of workloads, suites and load tests for every engine and for vLLM"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.10",
+    "anyio>=4.4",
+    "matplotlib>=3.9",
+    "pydantic-settings>=2.5",
+    "pytest>=8.3",
+    "tokenizers>=0.20",
+]
+
+[project.optional-dependencies]
+load = [
+    "locust>=2.31",
+]
+dev = [
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+]
+
+[tool.ruff]
+extend = "../ruff.toml"
+src = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit"]
+addopts = "-p no:cacheprovider"
+markers = [
+    "equivalence: greedy outputs match the phase-01 reference",
+    "streaming: SSE chunks arrive one by one and end with [DONE]",
+    "latency: TTFT, inter-token latency and end-to-end time for one user",
+    "concurrency: total throughput grows with the number of users",
+    "capacity: a burst of requests is served without errors",
+    "prefix_reuse: a shared prompt start makes later requests faster to first token",
+    "long_prompt_interference: long prompts do not freeze other users' streams",
+]
+
+[tool.coverage.run]
+source = ["engineharness"]
