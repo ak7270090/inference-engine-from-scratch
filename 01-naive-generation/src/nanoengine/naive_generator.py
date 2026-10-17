@@ -18,6 +18,10 @@ class NaiveGenerator:
         self._stop_token_ids = stop_token_ids
         self._device = device
 
+    @property
+    def vocab_size(self) -> int:
+        return self._model.config.vocab_size
+
     def generate(self, request: GenerationRequest) -> Iterator[TokenEvent]:
         """Yield one event per new token; the last one has ``is_finished`` set."""
         params = request.sampling_params
