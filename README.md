@@ -1,0 +1,62 @@
+# inference-engine-from-scratch
+
+An LLM inference engine for Qwen3-0.6B, built one optimization at a time. Each phase is its own
+folder. A shared harness measures every phase and compares it with vLLM on the same workloads.
+
+![Plan overview](docs/images/plan-overview.png)
+
+## Layout
+
+| Folder | What it is |
+|---|---|
+| `engine-harness/` | Workloads, streaming client, latency metrics, pytest suites, locust load test |
+| `kaggle/` | Notebook template and `run_on_kaggle.py`: run an engine and the harness on a free T4 |
+| `01-naive-generation/` | Plain PyTorch Qwen3, no KV cache, one request at a time |
+| `docs/results/` | Harness reports and sweep charts per engine |
+
+## Phases
+
+| Phase | Optimization | Status |
+|---|---|---|
+| 0 | Harness and vLLM baseline | in progress |
+| 1 | Naive generation | planned |
+| 2 | KV cache | planned |
+| 3 | Continuous batching | planned |
+| 4 | Paged KV cache | planned |
+| 5 | Prefix caching and chunked prefill | planned |
+| 6 | Speculative decoding | planned |
+| 7 | int8 weights and CUDA graphs | planned |
+
+## Every engine speaks the same API
+
+- `POST /v1/completions`: OpenAI-style. The prompt can be text or a list of token IDs.
+  Supports `stream`, `stream_options.include_usage`, `ignore_eos`, `temperature`, `top_p` and `seed`.
+- `GET /v1/models`, `GET /healthz`, `GET /metrics`
+
+## Running the harness
+
+```powershell
+cd engine-harness
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\python.exe -m pytest                      # unit tests, 80% coverage
+$env:HARNESS_ENV_FILE="../01-naive-generation/harness/cpu.env"
+.\.venv\Scripts\python.exe -m pytest tests/suites -rxXs   # suites against a running engine
+.\.venv\Scripts\python.exe -m engineharness sweep short_chat
+```
+
+## Running on a Kaggle T4
+
+Create a Kaggle API token and put it in `.env` as `KAGGLE_API_TOKEN` (the file is gitignored).
+Then push your commits and run:
+
+```powershell
+python kaggle/run_on_kaggle.py vllm --owner <kaggle-user>
+python kaggle/run_on_kaggle.py 01-naive-generation --owner <kaggle-user>
+```
+
+The results are saved to `docs/results/<target>-t4/`.
+
+## License
+
+MIT

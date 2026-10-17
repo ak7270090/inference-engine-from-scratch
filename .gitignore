@@ -20,3 +20,6 @@ htmlcov/
 *.safetensors
 *.bin
 hf-cache/
+
+# kaggle push folders and downloaded notebook logs
+kaggle/build/
