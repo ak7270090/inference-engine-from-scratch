@@ -10,6 +10,7 @@ The notebook clones the public repo, so push your commits first.
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -24,6 +25,8 @@ ENV_FILE = REPO_ROOT / ".env"
 
 KAGGLE_ACCELERATOR = "NvidiaTeslaT4"
 POLL_INTERVAL_SECONDS = 30
+KAGGLE_ATTEMPTS = 3
+KERNEL_STATUS_PATTERN = re.compile(r'has status "([^"]+)"')
 FINISHED_STATUSES = ("complete", "error", "cancel")
 NOTEBOOK_FILE_NAME = "run_phase.ipynb"
 
@@ -36,6 +39,18 @@ def load_env_file(env_file: Path) -> None:
         if "=" in line and not line.lstrip().startswith("#"):
             key, value = line.split("=", 1)
             os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
+
+
+def run_kaggle_with_retry(*arguments: str) -> str:
+    """Kaggle's API sometimes answers with an empty body; one retry is usually enough."""
+    for attempt in range(KAGGLE_ATTEMPTS):
+        try:
+            return run_kaggle(*arguments)
+        except RuntimeError:
+            if attempt + 1 == KAGGLE_ATTEMPTS:
+                raise
+            time.sleep(POLL_INTERVAL_SECONDS)
+    raise AssertionError("unreachable")
 
 
 def run_kaggle(*arguments: str) -> str:
@@ -82,10 +97,16 @@ def build_kernel_dir(target: str, repo_ref: str, owner: str) -> tuple[Path, str]
     return kernel_dir, f"{owner}/{kernel_slug}"
 
 
+def read_kernel_status(status_output: str) -> str:
+    """Only the quoted status counts; CLI warnings around it may contain words like 'error'."""
+    match = KERNEL_STATUS_PATTERN.search(status_output)
+    return match.group(1).lower() if match else "unknown"
+
+
 def wait_for_kernel(kernel_id: str) -> str:
     while True:
-        status = run_kaggle("kernels", "status", kernel_id).lower()
-        print(status.strip())
+        status = read_kernel_status(run_kaggle_with_retry("kernels", "status", kernel_id))
+        print(f"{kernel_id}: {status}")
         if any(finished in status for finished in FINISHED_STATUSES):
             return status
         time.sleep(POLL_INTERVAL_SECONDS)
@@ -103,11 +124,15 @@ def main() -> int:
         parser.error("pass --owner or set KAGGLE_USERNAME")
 
     kernel_dir, kernel_id = build_kernel_dir(parsed.target, parsed.repo_ref, owner)
-    print(run_kaggle("kernels", "push", "-p", str(kernel_dir), "--accelerator", KAGGLE_ACCELERATOR))
+    print(
+        run_kaggle_with_retry(
+            "kernels", "push", "-p", str(kernel_dir), "--accelerator", KAGGLE_ACCELERATOR
+        )
+    )
     status = wait_for_kernel(kernel_id)
     results_dir = RESULTS_ROOT / f"{parsed.target}-t4"
     results_dir.mkdir(parents=True, exist_ok=True)
-    print(run_kaggle("kernels", "output", kernel_id, "-p", str(results_dir)))
+    print(run_kaggle_with_retry("kernels", "output", kernel_id, "-p", str(results_dir)))
     print(f"results in {results_dir}")
     return 0 if "complete" in status else 1
 
