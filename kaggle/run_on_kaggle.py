@@ -41,7 +41,11 @@ def load_env_file(env_file: Path) -> None:
 def run_kaggle(*arguments: str) -> str:
     kaggle_executable = shutil.which("kaggle") or str(Path(sys.executable).with_name("kaggle"))
     result = subprocess.run(
-        [kaggle_executable, *arguments], capture_output=True, text=True, encoding="utf-8"
+        [kaggle_executable, *arguments],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"},
     )
     output = result.stdout + result.stderr
     token = os.environ.get("KAGGLE_API_TOKEN")
