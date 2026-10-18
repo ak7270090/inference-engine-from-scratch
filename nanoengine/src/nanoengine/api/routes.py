@@ -20,11 +20,12 @@ from nanoengine.constants import (
     HEALTH_PATH,
     METRICS_PATH,
     MODELS_PATH,
+    RETRY_AFTER_SECONDS,
     SSE_MEDIA_TYPE,
 )
-from nanoengine.engine.engine_loop import EngineOverloadedError
 from nanoengine.engine.interface import GenerationRequest, SamplingParams
 from nanoengine.engine.runtime import EngineRuntime
+from nanoengine.engine.scheduling.request_queue import EngineOverloadedError
 
 router = APIRouter()
 
@@ -74,7 +75,11 @@ async def create_completion(
     try:
         token_events = runtime.engine.submit(generation_request)
     except EngineOverloadedError as error:
-        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, str(error)) from error
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            str(error),
+            headers={"Retry-After": str(RETRY_AFTER_SECONDS)},
+        ) from error
     context = CompletionContext(
         completion_id=generation_request.request_id,
         created=int(time.time()),

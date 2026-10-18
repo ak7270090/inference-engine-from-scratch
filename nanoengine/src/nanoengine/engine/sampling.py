@@ -2,6 +2,7 @@
 
 import torch
 
+from nanoengine.constants import FINISH_REASON_LENGTH, FINISH_REASON_STOP
 from nanoengine.engine.interface import SamplingParams
 
 GREEDY_TEMPERATURE = 0.0
@@ -36,3 +37,14 @@ def sample_next_token(
     if params.top_p < 1.0:
         probabilities = apply_top_p(probabilities, params.top_p)
     return int(torch.multinomial(probabilities, 1, generator=generator).item())
+
+
+def find_finish_reason(
+    token_id: int, num_generated_tokens: int, params: SamplingParams, stop_token_ids: frozenset[int]
+) -> str | None:
+    """``stop`` on a stop token (unless ``ignore_eos``), ``length`` at ``max_new_tokens``."""
+    if not params.ignore_eos and token_id in stop_token_ids:
+        return FINISH_REASON_STOP
+    if num_generated_tokens >= params.max_new_tokens:
+        return FINISH_REASON_LENGTH
+    return None

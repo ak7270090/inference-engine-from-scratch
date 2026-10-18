@@ -1,27 +1,48 @@
 from pathlib import Path
 
+import pytest
 import torch
 
 from nanoengine import step_timing
-from nanoengine.engine.naive_generator import NaiveGenerator
-from nanoengine.step_timing import measure_step_timings, write_step_timings
+from nanoengine.step_timing import (
+    CachedDecodeStepBenchmark,
+    NaiveStepBenchmark,
+    measure_step_timings,
+    write_step_timings,
+)
 
 CPU = torch.device("cpu")
 
 
-def test_step_timings_cover_every_length_and_are_written(tiny_model, tmp_path: Path) -> None:
-    generator = NaiveGenerator(tiny_model, frozenset(), CPU)
+@pytest.mark.parametrize("benchmark_kind", ["naive", "cached"])
+def test_step_timings_cover_every_length_and_are_written(
+    tiny_model, tmp_path: Path, benchmark_kind: str
+) -> None:
+    if benchmark_kind == "naive":
+        benchmark = NaiveStepBenchmark(tiny_model, CPU)
+    else:
+        benchmark = CachedDecodeStepBenchmark(tiny_model, CPU, torch.float32, 16)
 
-    timings = measure_step_timings(generator, [4, 16], repeats=2, device=CPU)
-    write_step_timings(timings, "cpu-float32", tmp_path)
+    timings = measure_step_timings(benchmark, [4, 16], 2, CPU, tiny_model.config.vocab_size)
+    write_step_timings(timings, "cpu-float32", benchmark.description, tmp_path)
 
     assert [timing.sequence_length for timing in timings] == [4, 16]
     assert all(timing.min_step_ms <= timing.median_step_ms for timing in timings)
     assert (tmp_path / "step-time-vs-length-cpu-float32.png").exists()
-    assert "| 16 |" in (tmp_path / "step-time-vs-length-cpu-float32.md").read_text()
+    assert benchmark.description in (tmp_path / "step-time-vs-length-cpu-float32.md").read_text()
 
 
-def test_main_loads_the_configured_model(monkeypatch, tiny_model, tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    ("kv_cache", "expected_file"),
+    [
+        ("none", "step-time-vs-length-cpu-float32.json"),
+        ("contiguous", "step-time-vs-length-cpu-float32-kv-cache.json"),
+    ],
+)
+def test_main_measures_the_configured_mode(
+    monkeypatch, tiny_model, tmp_path: Path, kv_cache: str, expected_file: str
+) -> None:
+    monkeypatch.setenv("NANOENGINE_KV_CACHE", kv_cache)
     monkeypatch.setattr(step_timing, "download_model_files", lambda model_id, cache_dir: tmp_path)
     monkeypatch.setattr(
         step_timing, "load_qwen3_model", lambda model_dir, device, dtype: tiny_model
@@ -29,4 +50,4 @@ def test_main_loads_the_configured_model(monkeypatch, tiny_model, tmp_path: Path
 
     step_timing.main(["--lengths", "4", "--repeats", "1", "--output-dir", str(tmp_path)])
 
-    assert (tmp_path / "step-time-vs-length-cpu-float32.json").exists()
+    assert (tmp_path / expected_file).exists()

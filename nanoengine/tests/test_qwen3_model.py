@@ -61,11 +61,11 @@ def test_later_tokens_do_not_change_earlier_logits() -> None:
 
 
 def test_rotary_tables_start_with_no_rotation_at_position_zero() -> None:
-    cos, sin = build_rotary_tables(4, 8, 10000.0, torch.device("cpu"), torch.float32)
+    cos, sin = build_rotary_tables(torch.arange(4)[None, :], 8, 10000.0, torch.float32)
 
-    assert cos.shape == sin.shape == (4, 8)
-    torch.testing.assert_close(cos[0], torch.ones(8))
-    torch.testing.assert_close(sin[0], torch.zeros(8))
+    assert cos.shape == sin.shape == (1, 1, 4, 8)
+    torch.testing.assert_close(cos[0, 0, 0], torch.ones(8))
+    torch.testing.assert_close(sin[0, 0, 0], torch.zeros(8))
 
 
 def test_rotate_half_maps_first_half_to_second() -> None:

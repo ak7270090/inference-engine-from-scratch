@@ -1,34 +1,33 @@
-"""One background task serves requests strictly one at a time; the others wait in a queue."""
+"""``scheduler=serial``: one background task serves requests strictly one at a time."""
 
 import asyncio
 import contextlib
 import logging
 import time
-from collections.abc import AsyncIterator
-from dataclasses import dataclass, field
+from collections.abc import AsyncIterator, Iterator
+from typing import Protocol
 
 from nanoengine.constants import ENGINE_NAME
 from nanoengine.engine.interface import GenerationRequest, TokenEvent
-from nanoengine.engine.metrics import EngineMetrics
-from nanoengine.engine.naive_generator import NaiveGenerator
+from nanoengine.engine.metrics import STEP_KIND_DECODE, STEP_KIND_PREFILL, EngineMetrics
+from nanoengine.engine.scheduling.request_queue import (
+    EngineOverloadedError,
+    RequestHandle,
+    stream_token_events,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class EngineOverloadedError(Exception):
-    """The waiting queue is full."""
+class TokenGenerator(Protocol):
+    """``NaiveGenerator`` (no cache) or ``CachedGenerator`` (KV cache)."""
+
+    def generate(self, request: GenerationRequest) -> Iterator[TokenEvent]: ...
 
 
-@dataclass
-class RequestHandle:
-    request: GenerationRequest
-    token_events: asyncio.Queue[TokenEvent | BaseException] = field(default_factory=asyncio.Queue)
-    is_cancelled: bool = False
-
-
-class EngineLoop:
+class SerialEngineLoop:
     def __init__(
-        self, generator: NaiveGenerator, metrics: EngineMetrics, max_waiting_requests: int
+        self, generator: TokenGenerator, metrics: EngineMetrics, max_waiting_requests: int
     ) -> None:
         self._generator = generator
         self._metrics = metrics
@@ -55,19 +54,7 @@ class EngineLoop:
                 f"{self._waiting.maxsize} requests already waiting"
             ) from error
         self._metrics.waiting_requests.set(self._waiting.qsize())
-        return self._stream_token_events(handle)
-
-    async def _stream_token_events(self, handle: RequestHandle) -> AsyncIterator[TokenEvent]:
-        try:
-            while True:
-                event = await handle.token_events.get()
-                if isinstance(event, BaseException):
-                    raise event
-                yield event
-                if event.is_finished:
-                    return
-        finally:
-            handle.is_cancelled = True
+        return stream_token_events(handle)
 
     async def _serve_forever(self) -> None:
         while True:
@@ -87,15 +74,18 @@ class EngineLoop:
                 "num_waiting": self._waiting.qsize(),
             },
         )
-        self._metrics.running_requests.set(1)
+        self._metrics.set_running_requests(1)
         token_events = self._generator.generate(request)
+        step_kind = STEP_KIND_PREFILL
         try:
             while not handle.is_cancelled:
                 step_started_at = time.perf_counter()
                 event = await asyncio.to_thread(next, token_events, None)
                 if event is None:
                     break
-                self._metrics.step_latency_seconds.observe(time.perf_counter() - step_started_at)
+                elapsed_seconds = time.perf_counter() - step_started_at
+                self._metrics.step_latency_seconds.labels(step_kind).observe(elapsed_seconds)
+                step_kind = STEP_KIND_DECODE
                 self._metrics.generated_tokens.inc()
                 handle.token_events.put_nowait(event)
                 if event.is_finished:
@@ -105,4 +95,5 @@ class EngineLoop:
             logger.exception("generation failed", extra={"request_id": request.request_id})
             handle.token_events.put_nowait(error)
         finally:
-            self._metrics.running_requests.set(0)
+            token_events.close()
+            self._metrics.set_running_requests(0)

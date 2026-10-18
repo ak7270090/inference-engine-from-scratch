@@ -7,6 +7,8 @@ import torch
 from torch import nn
 from torch.nn import functional
 
+from nanoengine.models.attention_context import AttentionContext, run_cached_attention
+
 
 @dataclass(frozen=True)
 class Qwen3Config:
@@ -43,16 +45,15 @@ class RMSNorm(nn.Module):
 
 
 def build_rotary_tables(
-    sequence_length: int, head_dim: int, rope_theta: float, device: torch.device, dtype: torch.dtype
+    positions: torch.Tensor, head_dim: int, rope_theta: float, dtype: torch.dtype
 ) -> tuple[torch.Tensor, torch.Tensor]:
-    """cos and sin of every position's rotation angles, each ``[sequence_length, head_dim]``."""
+    """cos and sin for ``positions [batch, seq]``, each ``[batch, 1, seq, head_dim]``."""
     frequency_exponents = (
-        torch.arange(0, head_dim, 2, device=device, dtype=torch.float32) / head_dim
+        torch.arange(0, head_dim, 2, device=positions.device, dtype=torch.float32) / head_dim
     )
     inverse_frequencies = 1.0 / (rope_theta**frequency_exponents)
-    positions = torch.arange(sequence_length, device=device, dtype=torch.float32)
-    angles = torch.outer(positions, inverse_frequencies)
-    angles = torch.cat((angles, angles), dim=-1)
+    angles = positions.float()[..., None] * inverse_frequencies
+    angles = torch.cat((angles, angles), dim=-1).unsqueeze(1)
     return angles.cos().to(dtype), angles.sin().to(dtype)
 
 
@@ -70,8 +71,9 @@ def apply_rotary_embedding(
 class Qwen3Attention(nn.Module):
     """Grouped-query attention: query and key heads are RMS-normalized before RoPE."""
 
-    def __init__(self, config: Qwen3Config) -> None:
+    def __init__(self, config: Qwen3Config, layer_index: int) -> None:
         super().__init__()
+        self.layer_index = layer_index
         self.num_heads = config.num_attention_heads
         self.num_kv_heads = config.num_key_value_heads
         self.head_dim = config.head_dim
@@ -85,8 +87,13 @@ class Qwen3Attention(nn.Module):
         self.k_norm = RMSNorm(self.head_dim, config.rms_norm_eps)
 
     def forward(
-        self, hidden_states: torch.Tensor, cos: torch.Tensor, sin: torch.Tensor
+        self,
+        hidden_states: torch.Tensor,
+        cos: torch.Tensor,
+        sin: torch.Tensor,
+        context: AttentionContext | None,
     ) -> torch.Tensor:
+        """Without ``context``: plain causal attention over the input (no cache)."""
         batch_size, sequence_length, _ = hidden_states.shape
         query_shape = (batch_size, sequence_length, self.num_heads, self.head_dim)
         kv_shape = (batch_size, sequence_length, self.num_kv_heads, self.head_dim)
@@ -95,10 +102,15 @@ class Qwen3Attention(nn.Module):
         values = self.v_proj(hidden_states).view(kv_shape).transpose(1, 2)
         queries = apply_rotary_embedding(queries, cos, sin)
         keys = apply_rotary_embedding(keys, cos, sin)
-        heads_per_kv_head = self.num_heads // self.num_kv_heads
-        keys = keys.repeat_interleave(heads_per_kv_head, dim=1)
-        values = values.repeat_interleave(heads_per_kv_head, dim=1)
-        attention = functional.scaled_dot_product_attention(queries, keys, values, is_causal=True)
+        if context is None:
+            heads_per_kv_head = self.num_heads // self.num_kv_heads
+            keys = keys.repeat_interleave(heads_per_kv_head, dim=1)
+            values = values.repeat_interleave(heads_per_kv_head, dim=1)
+            attention = functional.scaled_dot_product_attention(
+                queries, keys, values, is_causal=True
+            )
+        else:
+            attention = run_cached_attention(queries, keys, values, context, self.layer_index)
         attention = attention.transpose(1, 2).reshape(batch_size, sequence_length, -1)
         return self.o_proj(attention)
 
@@ -118,18 +130,22 @@ class Qwen3MLP(nn.Module):
 
 
 class Qwen3DecoderLayer(nn.Module):
-    def __init__(self, config: Qwen3Config) -> None:
+    def __init__(self, config: Qwen3Config, layer_index: int) -> None:
         super().__init__()
-        self.self_attn = Qwen3Attention(config)
+        self.self_attn = Qwen3Attention(config, layer_index)
         self.mlp = Qwen3MLP(config)
         self.input_layernorm = RMSNorm(config.hidden_size, config.rms_norm_eps)
         self.post_attention_layernorm = RMSNorm(config.hidden_size, config.rms_norm_eps)
 
     def forward(
-        self, hidden_states: torch.Tensor, cos: torch.Tensor, sin: torch.Tensor
+        self,
+        hidden_states: torch.Tensor,
+        cos: torch.Tensor,
+        sin: torch.Tensor,
+        context: AttentionContext | None,
     ) -> torch.Tensor:
         hidden_states = hidden_states + self.self_attn(
-            self.input_layernorm(hidden_states), cos, sin
+            self.input_layernorm(hidden_states), cos, sin, context
         )
         return hidden_states + self.mlp(self.post_attention_layernorm(hidden_states))
 
@@ -140,21 +156,25 @@ class Qwen3Model(nn.Module):
         self.config = config
         self.embed_tokens = nn.Embedding(config.vocab_size, config.hidden_size)
         self.layers = nn.ModuleList(
-            Qwen3DecoderLayer(config) for _ in range(config.num_hidden_layers)
+            Qwen3DecoderLayer(config, layer_index)
+            for layer_index in range(config.num_hidden_layers)
         )
         self.norm = RMSNorm(config.hidden_size, config.rms_norm_eps)
 
-    def forward(self, token_ids: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self, token_ids: torch.Tensor, context: AttentionContext | None = None
+    ) -> torch.Tensor:
         hidden_states = self.embed_tokens(token_ids)
+        if context is None:
+            positions = torch.arange(token_ids.shape[1], device=token_ids.device)
+            positions = positions.expand(token_ids.shape)
+        else:
+            positions = context.positions
         cos, sin = build_rotary_tables(
-            token_ids.shape[1],
-            self.config.head_dim,
-            self.config.rope_theta,
-            hidden_states.device,
-            hidden_states.dtype,
+            positions, self.config.head_dim, self.config.rope_theta, hidden_states.dtype
         )
         for layer in self.layers:
-            hidden_states = layer(hidden_states, cos, sin)
+            hidden_states = layer(hidden_states, cos, sin, context)
         return self.norm(hidden_states)
 
 
@@ -168,8 +188,11 @@ class Qwen3ForCausalLM(nn.Module):
         if not config.tie_word_embeddings:
             self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
 
-    def forward(self, token_ids: torch.Tensor) -> torch.Tensor:
-        return self.model(token_ids)
+    def forward(
+        self, token_ids: torch.Tensor, context: AttentionContext | None = None
+    ) -> torch.Tensor:
+        """Without ``context`` the whole sequence is recomputed (phase 1); with it, the KV cache."""
+        return self.model(token_ids, context)
 
     def compute_logits(self, hidden_states: torch.Tensor) -> torch.Tensor:
         output_weight = (

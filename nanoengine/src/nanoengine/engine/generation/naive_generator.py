@@ -4,9 +4,12 @@ from collections.abc import Iterator
 
 import torch
 
-from nanoengine.constants import FINISH_REASON_LENGTH, FINISH_REASON_STOP
 from nanoengine.engine.interface import GenerationRequest, SamplingParams, TokenEvent
-from nanoengine.engine.sampling import create_sampling_generator, sample_next_token
+from nanoengine.engine.sampling import (
+    create_sampling_generator,
+    find_finish_reason,
+    sample_next_token,
+)
 from nanoengine.models.qwen3 import Qwen3ForCausalLM
 
 
@@ -30,7 +33,9 @@ class NaiveGenerator:
         for step_index in range(params.max_new_tokens):
             next_token_id = self.run_full_sequence_step(token_ids, params, generator)
             token_ids.append(next_token_id)
-            finish_reason = self._find_finish_reason(next_token_id, step_index, params)
+            finish_reason = find_finish_reason(
+                next_token_id, step_index + 1, params, self._stop_token_ids
+            )
             yield TokenEvent(
                 request.request_id, next_token_id, finish_reason is not None, finish_reason
             )
@@ -45,12 +50,3 @@ class NaiveGenerator:
         hidden_states = self._model(input_ids)
         logits = self._model.compute_logits(hidden_states[0, -1])
         return sample_next_token(logits, params, generator)
-
-    def _find_finish_reason(
-        self, token_id: int, step_index: int, params: SamplingParams
-    ) -> str | None:
-        if not params.ignore_eos and token_id in self._stop_token_ids:
-            return FINISH_REASON_STOP
-        if step_index + 1 == params.max_new_tokens:
-            return FINISH_REASON_LENGTH
-        return None

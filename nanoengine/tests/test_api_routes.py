@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from nanoengine.config import EngineSettings, load_engine_settings
 from nanoengine.constants import ENV_FILE_VARIABLE
-from nanoengine.engine.engine_loop import EngineOverloadedError
+from nanoengine.engine.scheduling.request_queue import EngineOverloadedError
 from tests.conftest import TINY_MAX_MODEL_LEN, TINY_MODEL_NAME
 
 
@@ -92,21 +92,23 @@ def test_metrics_count_generated_tokens(api_client: TestClient) -> None:
 
     assert "nanoengine_generated_tokens_total 4.0" in metrics_text
     assert 'nanoengine_finished_requests_total{finish_reason="length"} 1.0' in metrics_text
-    assert "nanoengine_step_latency_seconds_count 4.0" in metrics_text
+    assert 'nanoengine_step_latency_seconds_count{step_kind="prefill"} 1.0' in metrics_text
+    assert 'nanoengine_step_latency_seconds_count{step_kind="decode"} 3.0' in metrics_text
 
 
 def reject_request(request) -> None:
     raise EngineOverloadedError("queue full")
 
 
-def test_full_queue_returns_service_unavailable(
+def test_full_queue_asks_the_client_to_retry_later(
     api_client: TestClient, tiny_runtime, monkeypatch
 ) -> None:
     monkeypatch.setattr(tiny_runtime.engine, "submit", reject_request)
 
     response = api_client.post("/v1/completions", json=build_body())
 
-    assert response.status_code == 503
+    assert response.status_code == 429
+    assert response.headers["retry-after"] == "1"
 
 
 def test_settings_read_the_env_file(monkeypatch, tmp_path) -> None:

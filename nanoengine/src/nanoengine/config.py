@@ -4,9 +4,16 @@ import os
 from pathlib import Path
 from typing import Literal
 
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from nanoengine.constants import DEFAULT_MODEL_ID, ENV_FILE_VARIABLE, ENV_PREFIX
+from nanoengine.constants import (
+    DEFAULT_MODEL_ID,
+    ENV_FILE_VARIABLE,
+    ENV_PREFIX,
+    KV_CACHE_NONE,
+    SCHEDULER_SERIAL,
+)
 
 
 class EngineSettings(BaseSettings):
@@ -25,8 +32,15 @@ class EngineSettings(BaseSettings):
     max_waiting_requests: int = 256
 
     # one value per optimization; each phase adds an option, older options stay as baselines
-    kv_cache: Literal["none"] = "none"
-    scheduler: Literal["serial"] = "serial"
+    kv_cache: Literal["none", "contiguous", "paged"] = "none"
+    scheduler: Literal["serial", "static", "continuous"] = "serial"
+
+    # batching and KV memory (phases 3-4)
+    max_num_seqs: int = Field(default=64, ge=1)
+    kv_cache_memory_mb: int = Field(default=1024, ge=1)
+    kv_block_size: int = Field(default=16, ge=1)
+    max_prefill_tokens: int = Field(default=4096, ge=1)
+    batch_fill_timeout_ms: int = Field(default=50, ge=0)
 
     host: str = "0.0.0.0"
     port: int = 8000
@@ -35,6 +49,16 @@ class EngineSettings(BaseSettings):
     @property
     def public_model_name(self) -> str:
         return self.served_model_name or self.model_id
+
+    @property
+    def is_batched(self) -> bool:
+        return self.scheduler != SCHEDULER_SERIAL
+
+    @model_validator(mode="after")
+    def check_batching_has_a_kv_cache(self) -> "EngineSettings":
+        if self.is_batched and self.kv_cache == KV_CACHE_NONE:
+            raise ValueError(f"scheduler={self.scheduler} needs kv_cache=contiguous or paged")
+        return self
 
 
 def load_engine_settings() -> EngineSettings:

@@ -5,10 +5,11 @@ from collections.abc import Iterator
 import pytest
 import torch
 
-from nanoengine.engine.engine_loop import EngineLoop, EngineOverloadedError
+from nanoengine.engine.generation.naive_generator import NaiveGenerator
 from nanoengine.engine.interface import GenerationRequest, SamplingParams, TokenEvent
 from nanoengine.engine.metrics import EngineMetrics
-from nanoengine.engine.naive_generator import NaiveGenerator
+from nanoengine.engine.scheduling.request_queue import EngineOverloadedError
+from nanoengine.engine.scheduling.serial_engine_loop import SerialEngineLoop
 
 pytestmark = pytest.mark.anyio
 
@@ -47,13 +48,13 @@ def build_request(request_id: str, max_new_tokens: int = 3) -> GenerationRequest
     return GenerationRequest(request_id, [1, 2], SamplingParams(max_new_tokens=max_new_tokens))
 
 
-async def collect_token_ids(engine: EngineLoop, request: GenerationRequest) -> list[int]:
+async def collect_token_ids(engine: SerialEngineLoop, request: GenerationRequest) -> list[int]:
     return [event.token_id async for event in engine.submit(request)]
 
 
 async def test_requests_are_served_one_after_another() -> None:
     generator = SlowFakeGenerator()
-    engine = EngineLoop(generator, EngineMetrics(), max_waiting_requests=4)
+    engine = SerialEngineLoop(generator, EngineMetrics(), max_waiting_requests=4)
     await engine.start()
 
     results = await asyncio.gather(
@@ -67,7 +68,7 @@ async def test_requests_are_served_one_after_another() -> None:
 
 
 async def test_full_queue_rejects_new_requests() -> None:
-    engine = EngineLoop(SlowFakeGenerator(), EngineMetrics(), max_waiting_requests=1)
+    engine = SerialEngineLoop(SlowFakeGenerator(), EngineMetrics(), max_waiting_requests=1)
     engine.submit(build_request("queued"))
 
     with pytest.raises(EngineOverloadedError):
@@ -75,7 +76,7 @@ async def test_full_queue_rejects_new_requests() -> None:
 
 
 async def test_generation_error_reaches_the_caller() -> None:
-    engine = EngineLoop(FailingGenerator(), EngineMetrics(), max_waiting_requests=1)
+    engine = SerialEngineLoop(FailingGenerator(), EngineMetrics(), max_waiting_requests=1)
     await engine.start()
 
     with pytest.raises(RuntimeError, match="model exploded"):
@@ -85,7 +86,7 @@ async def test_generation_error_reaches_the_caller() -> None:
 
 async def test_abandoned_request_stops_generating() -> None:
     generator = SlowFakeGenerator()
-    engine = EngineLoop(generator, EngineMetrics(), max_waiting_requests=4)
+    engine = SerialEngineLoop(generator, EngineMetrics(), max_waiting_requests=4)
     await engine.start()
 
     token_events = engine.submit(build_request("abandoned", max_new_tokens=50))
@@ -99,12 +100,12 @@ async def test_abandoned_request_stops_generating() -> None:
 
 
 async def test_stop_without_start_does_nothing() -> None:
-    await EngineLoop(SlowFakeGenerator(), EngineMetrics(), max_waiting_requests=1).stop()
+    await SerialEngineLoop(SlowFakeGenerator(), EngineMetrics(), max_waiting_requests=1).stop()
 
 
 async def test_real_generator_runs_inside_the_loop(tiny_model) -> None:
     generator = NaiveGenerator(tiny_model, frozenset(), torch.device("cpu"))
-    engine = EngineLoop(generator, EngineMetrics(), max_waiting_requests=1)
+    engine = SerialEngineLoop(generator, EngineMetrics(), max_waiting_requests=1)
     await engine.start()
 
     token_ids = await collect_token_ids(engine, build_request("real", max_new_tokens=4))

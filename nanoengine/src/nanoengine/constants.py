@@ -27,7 +27,13 @@ FINISH_REASON_STOP = "stop"
 FINISH_REASON_LENGTH = "length"
 
 KV_CACHE_NONE = "none"
+KV_CACHE_CONTIGUOUS = "contiguous"
+KV_CACHE_PAGED = "paged"
 SCHEDULER_SERIAL = "serial"
+SCHEDULER_STATIC = "static"
+SCHEDULER_CONTINUOUS = "continuous"
+
+RETRY_AFTER_SECONDS = 1
 
 CONFIG_FILE_NAME = "config.json"
 GENERATION_CONFIG_FILE_NAME = "generation_config.json"
