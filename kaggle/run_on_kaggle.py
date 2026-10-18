@@ -28,6 +28,14 @@ POLL_INTERVAL_SECONDS = 30
 KAGGLE_ATTEMPTS = 3
 KERNEL_STATUS_PATTERN = re.compile(r'has status "([^"]+)"')
 FINISHED_STATUSES = ("complete", "error", "cancel")
+STARTED_STATUSES = ("queued", "running")
+# right after a push, "status" can still describe the previous version's finished run
+POLLS_BEFORE_TRUSTING_A_FINISHED_STATUS = 10
+# the CLI exits 0 on these, so they are matched in its output
+PUSH_ERROR_MARKER = "Kernel push error"
+GPU_SESSION_LIMIT_MARKER = "Maximum batch GPU session count"
+GPU_SESSION_WAIT_SECONDS = 120
+MAX_GPU_SESSION_WAITS = 90
 NOTEBOOK_FILE_NAME = "run_phase.ipynb"
 
 
@@ -103,13 +111,34 @@ def read_kernel_status(status_output: str) -> str:
     return match.group(1).lower() if match else "unknown"
 
 
+def push_kernel(kernel_dir: Path) -> str:
+    """Push and start a run; wait while both free GPU sessions are busy."""
+    for _ in range(MAX_GPU_SESSION_WAITS):
+        output = run_kaggle_with_retry(
+            "kernels", "push", "-p", str(kernel_dir), "--accelerator", KAGGLE_ACCELERATOR
+        )
+        if GPU_SESSION_LIMIT_MARKER in output:
+            print(f"both GPU sessions busy; retrying in {GPU_SESSION_WAIT_SECONDS} s")
+            time.sleep(GPU_SESSION_WAIT_SECONDS)
+            continue
+        if PUSH_ERROR_MARKER in output:
+            raise RuntimeError(f"push failed: {output}")
+        return output
+    raise RuntimeError("no free GPU session")
+
+
 def wait_for_kernel(kernel_id: str) -> str:
-    while True:
+    """Wait until this push's run finishes; ignore a finished status left by the previous run."""
+    has_started = False
+    for poll in range(10**6):
         status = read_kernel_status(run_kaggle_with_retry("kernels", "status", kernel_id))
         print(f"{kernel_id}: {status}")
-        if any(finished in status for finished in FINISHED_STATUSES):
+        has_started = has_started or any(started in status for started in STARTED_STATUSES)
+        is_finished = any(finished in status for finished in FINISHED_STATUSES)
+        if is_finished and (has_started or poll >= POLLS_BEFORE_TRUSTING_A_FINISHED_STATUS):
             return status
         time.sleep(POLL_INTERVAL_SECONDS)
+    raise AssertionError("unreachable")
 
 
 def main() -> int:
@@ -124,11 +153,7 @@ def main() -> int:
         parser.error("pass --owner or set KAGGLE_USERNAME")
 
     kernel_dir, kernel_id = build_kernel_dir(parsed.target, parsed.repo_ref, owner)
-    print(
-        run_kaggle_with_retry(
-            "kernels", "push", "-p", str(kernel_dir), "--accelerator", KAGGLE_ACCELERATOR
-        )
-    )
+    print(push_kernel(kernel_dir))
     status = wait_for_kernel(kernel_id)
     results_dir = RESULTS_ROOT / f"{parsed.target}-t4"
     results_dir.mkdir(parents=True, exist_ok=True)

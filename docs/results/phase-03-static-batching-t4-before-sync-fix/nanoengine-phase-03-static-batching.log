@@ -1,0 +1,222 @@
+[{"stream_name":"stderr","time":6.978360102,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":6.978409201,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":6.978413378,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":6.978415858,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":7.570107471,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.570141631,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.570145623,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.570161431,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":9.264370959,"data":"$ nvidia-smi -\u003e 0\n"}
+,{"stream_name":"stdout","time":9.26441356,"data":"Sun Oct 18 06:42:22 2026       \n"}
+,{"stream_name":"stdout","time":9.264420042,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":9.264424907,"data":"| NVIDIA-SMI 580.178.04             Driver Version: 580.178.04     CUDA Version: 13.0     |\n"}
+,{"stream_name":"stdout","time":9.264429895,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":9.264434671,"data":"| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n"}
+,{"stream_name":"stdout","time":9.264438774,"data":"| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n"}
+,{"stream_name":"stdout","time":9.264442813,"data":"|                                         |                        |               MIG M. |\n"}
+,{"stream_name":"stdout","time":9.264446808,"data":"|=========================================+========================+======================|\n"}
+,{"stream_name":"stdout","time":9.264450819,"data":"|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":9.264454848,"data":"| N/A   53C    P8             11W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":9.264461088000001,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":9.264468522,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":9.26447128,"data":"|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":9.264473905,"data":"| N/A   50C    P8             11W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":9.264476662,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":9.264479404,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":9.264482271,"data":"\n"}
+,{"stream_name":"stdout","time":9.264484833,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":9.264487729,"data":"| Processes:                                                                              |\n"}
+,{"stream_name":"stdout","time":9.264513103,"data":"|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n"}
+,{"stream_name":"stdout","time":9.26451798,"data":"|        ID   ID                                                               Usage      |\n"}
+,{"stream_name":"stdout","time":9.264522728,"data":"|=========================================================================================|\n"}
+,{"stream_name":"stdout","time":9.264527315,"data":"|  No running processes found                                                             |\n"}
+,{"stream_name":"stdout","time":9.264532914,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":9.264537739,"data":" \n"}
+,{"stream_name":"stdout","time":10.367849284,"data":"$ git clone --depth 1 --branch main https://github.com/ak7270090/inference-engine-from-scratch.git /tmp/repo -\u003e 0\n"}
+,{"stream_name":"stdout","time":10.367881726,"data":" Cloning into '/tmp/repo'...\n"}
+,{"stream_name":"stdout","time":10.367885745,"data":"\n"}
+,{"stream_name":"stdout","time":20.651512001,"data":"$ /usr/bin/python3 -m pip install -q -e /tmp/repo/engine-harness -\u003e 0\n"}
+,{"stream_name":"stdout","time":20.651558547,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.4/80.4 kB 2.4 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":20.651565685,"data":" \n"}
+,{"stream_name":"stdout","time":29.110684407,"data":"$ /usr/bin/python3 -m pip install -q -e /tmp/repo/nanoengine -\u003e 0\n"}
+,{"stream_name":"stdout","time":29.110737773,"data":" \n"}
+,{"stream_name":"stdout","time":56.011449702,"data":"$ /usr/bin/python3 -m engineharness wait -\u003e 0\n"}
+,{"stream_name":"stdout","time":56.011489464,"data":"engine ready\n"}
+,{"stream_name":"stdout","time":56.011494384,"data":" \n"}
+,{"stream_name":"stdout","time":1019.673320898,"data":"$ /usr/bin/python3 -m pytest tests/suites -rxXs -\u003e 0\n"}
+,{"stream_name":"stdout","time":1019.673381122,"data":"============================= test session starts ==============================\n"}
+,{"stream_name":"stdout","time":1019.673385718,"data":"platform linux -- Python 3.13.15, pytest-8.4.2, pluggy-1.6.0\n"}
+,{"stream_name":"stdout","time":1019.673388886,"data":"rootdir: /tmp/repo/engine-harness\n"}
+,{"stream_name":"stdout","time":1019.673391738,"data":"configfile: pyproject.toml\n"}
+,{"stream_name":"stdout","time":1019.67339467,"data":"plugins: typeguard-4.6.0, anyio-4.14.2, langsmith-0.12.1\n"}
+,{"stream_name":"stdout","time":1019.673397646,"data":"collected 7 items\n"}
+,{"stream_name":"stdout","time":1019.673400428,"data":"\n"}
+,{"stream_name":"stdout","time":1019.673403139,"data":"tests/suites/test_concurrency_and_capacity.py ..                         [ 28%]\n"}
+,{"stream_name":"stdout","time":1019.673406193,"data":"tests/suites/test_equivalence.py s                                       [ 42%]\n"}
+,{"stream_name":"stdout","time":1019.673408999,"data":"tests/suites/test_prefix_and_interference.py xX                          [ 71%]\n"}
+,{"stream_name":"stdout","time":1019.67341181,"data":"tests/suites/test_streaming_and_latency.py ..                            [100%]\n"}
+,{"stream_name":"stdout","time":1019.67341463,"data":"\n"}
+,{"stream_name":"stdout","time":1019.673417371,"data":"=============================== warnings summary ===============================\n"}
+,{"stream_name":"stdout","time":1019.673420313,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673429596,"data":"  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'\n"}
+,{"stream_name":"stdout","time":1019.673432302,"data":"    prop = Group((name + Suppress(\"=\") + comma_separated(value)) | oneOf(_CONSTANTS))\n"}
+,{"stream_name":"stdout","time":1019.673434799,"data":"\n"}
+,{"stream_name":"stdout","time":1019.673436887,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673439137,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673441377,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673443683,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673445973,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673448187,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.67345044,"data":"  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'\n"}
+,{"stream_name":"stdout","time":1019.673452922,"data":"    parse = parser.parseString(pattern)\n"}
+,{"stream_name":"stdout","time":1019.673455097,"data":"\n"}
+,{"stream_name":"stdout","time":1019.673457149,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673459401,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673461696,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673467602,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.67347026,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673472516,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673474787,"data":"  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'\n"}
+,{"stream_name":"stdout","time":1019.673477176,"data":"    parser.resetCache()\n"}
+,{"stream_name":"stdout","time":1019.673479346,"data":"\n"}
+,{"stream_name":"stdout","time":1019.673481415,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1019.673483678,"data":"  /usr/local/lib/python3.13/dist-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'\n"}
+,{"stream_name":"stdout","time":1019.673486071,"data":"    ParserElement.enablePackrat()\n"}
+,{"stream_name":"stdout","time":1019.673488255,"data":"\n"}
+,{"stream_name":"stdout","time":1019.673490328,"data":"-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n"}
+,{"stream_name":"stdout","time":1019.673492587,"data":"=================================== XPASSES ====================================\n"}
+,{"stream_name":"stdout","time":1019.673494847,"data":"=========================== short test summary info ============================\n"}
+,{"stream_name":"stdout","time":1019.673499544,"data":"XFAIL tests/suites/test_prefix_and_interference.py::test_shared_prompt_start_cuts_time_to_first_token - expected to fail for this phase\n"}
+,{"stream_name":"stdout","time":1019.673502019,"data":"XPASS tests/suites/test_prefix_and_interference.py::test_long_prompts_do_not_freeze_other_streams - expected to fail for this phase\n"}
+,{"stream_name":"stdout","time":1019.673504357,"data":"SKIPPED [1] tests/suites/test_equivalence.py:13: suite does not apply to this phase\n"}
+,{"stream_name":"stdout","time":1019.673506636,"data":"= 4 passed, 1 skipped, 1 xfailed, 1 xpassed, 14 warnings in 961.72s (0:16:01) ==\n"}
+,{"stream_name":"stdout","time":1019.67350891,"data":" \n"}
+,{"stream_name":"stdout","time":1522.547314248,"data":"$ /usr/bin/python3 -m engineharness sweep short_chat -\u003e 0\n"}
+,{"stream_name":"stdout","time":1522.547358829,"data":"wrote /kaggle/working/results/short_chat/concurrency-sweep.md\n"}
+,{"stream_name":"stdout","time":1522.547365278,"data":"wrote /kaggle/working/results/short_chat/metrics.json\n"}
+,{"stream_name":"stdout","time":1522.547369808,"data":"wrote /kaggle/working/results/short_chat/concurrency-sweep.png\n"}
+,{"stream_name":"stdout","time":1522.547374296,"data":" Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":1522.547379112,"data":"\n"}
+,{"stream_name":"stdout","time":1571.790812736,"data":"$ /usr/bin/python3 -m engineharness sweep long_prompt -\u003e 0\n"}
+,{"stream_name":"stdout","time":1571.790848064,"data":"wrote /kaggle/working/results/long_prompt/concurrency-sweep.md\n"}
+,{"stream_name":"stdout","time":1571.790853706,"data":"wrote /kaggle/working/results/long_prompt/metrics.json\n"}
+,{"stream_name":"stdout","time":1571.790858275,"data":"wrote /kaggle/working/results/long_prompt/concurrency-sweep.png\n"}
+,{"stream_name":"stdout","time":1571.790862797,"data":" Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":1571.790867694,"data":"\n"}
+,{"stream_name":"stdout","time":1868.428661299,"data":"$ /usr/bin/python3 -m engineharness sweep shared_prefix -\u003e 0\n"}
+,{"stream_name":"stdout","time":1868.428707562,"data":"wrote /kaggle/working/results/shared_prefix/concurrency-sweep.md\n"}
+,{"stream_name":"stdout","time":1868.428714482,"data":"wrote /kaggle/working/results/shared_prefix/metrics.json\n"}
+,{"stream_name":"stdout","time":1868.428719208,"data":"wrote /kaggle/working/results/shared_prefix/concurrency-sweep.png\n"}
+,{"stream_name":"stdout","time":1868.428723671,"data":" Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":1868.428728131,"data":"\n"}
+,{"stream_name":"stdout","time":3217.600193987,"data":"$ /usr/bin/python3 -m engineharness sweep mixed_lengths -\u003e 0\n"}
+,{"stream_name":"stdout","time":3217.600227929,"data":"wrote /kaggle/working/results/mixed_lengths/concurrency-sweep.md\n"}
+,{"stream_name":"stdout","time":3217.600233714,"data":"wrote /kaggle/working/results/mixed_lengths/metrics.json\n"}
+,{"stream_name":"stdout","time":3217.600239934,"data":"wrote /kaggle/working/results/mixed_lengths/concurrency-sweep.png\n"}
+,{"stream_name":"stdout","time":3217.600248425,"data":" Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":3217.600251732,"data":"\n"}
+,{"stream_name":"stdout","time":3228.047541523,"data":"$ /usr/bin/python3 -m nanoengine.step_timing --output-dir /kaggle/working/results -\u003e 0\n"}
+,{"stream_name":"stdout","time":3228.047604096,"data":" \n"}
+,{"stream_name":"stdout","time":3228.047609786,"data":"Fetching 4 files:   0%|          | 0/4 [00:00\u003c?, ?it/s]\n"}
+,{"stream_name":"stdout","time":3228.047614006,"data":"Fetching 4 files: 100%|██████████| 4/4 [00:00\u003c00:00, 1279.63it/s]\n"}
+,{"stream_name":"stdout","time":3228.047619524,"data":"\n"}
+,{"stream_name":"stdout","time":3228.4735324,"data":"T /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473561874,"data":"INFO:     127.0.0.1:50788 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.47356676,"data":"INFO:     127.0.0.1:50776 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.47357052,"data":"INFO:     127.0.0.1:50724 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473574061,"data":"INFO:     127.0.0.1:50692 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473577344,"data":"INFO:     127.0.0.1:50740 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473581102,"data":"INFO:     127.0.0.1:50720 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473585656,"data":"INFO:     127.0.0.1:50692 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473589728,"data":"INFO:     127.0.0.1:50740 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.47359311,"data":"INFO:     127.0.0.1:50692 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473596581,"data":"INFO:     127.0.0.1:46656 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473600113,"data":"INFO:     127.0.0.1:46658 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473603622,"data":"INFO:     127.0.0.1:46666 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473607246,"data":"INFO:     127.0.0.1:46682 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473610753,"data":"INFO:     127.0.0.1:46698 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473614708,"data":"INFO:     127.0.0.1:46722 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473618195,"data":"INFO:     127.0.0.1:46738 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473621478,"data":"INFO:     127.0.0.1:46744 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473624987,"data":"INFO:     127.0.0.1:46710 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473628616,"data":"INFO:     127.0.0.1:46748 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473632248,"data":"INFO:     127.0.0.1:46764 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473636297,"data":"INFO:     127.0.0.1:46772 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473639856,"data":"INFO:     127.0.0.1:46788 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473643466,"data":"INFO:     127.0.0.1:46792 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473647239,"data":"INFO:     127.0.0.1:46804 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473651051,"data":"INFO:     127.0.0.1:46812 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473666477,"data":"INFO:     127.0.0.1:46818 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473670052,"data":"INFO:     127.0.0.1:46824 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473673411,"data":"INFO:     127.0.0.1:46836 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473676735,"data":"INFO:     127.0.0.1:46844 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473680214,"data":"INFO:     127.0.0.1:46850 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473686551,"data":"INFO:     127.0.0.1:46854 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473705201,"data":"INFO:     127.0.0.1:46862 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473712501,"data":"INFO:     127.0.0.1:46912 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473716695,"data":"INFO:     127.0.0.1:46926 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473720178,"data":"INFO:     127.0.0.1:46934 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473723862,"data":"INFO:     127.0.0.1:46948 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473727614,"data":"INFO:     127.0.0.1:46954 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473731557,"data":"INFO:     127.0.0.1:46968 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473735111,"data":"INFO:     127.0.0.1:46978 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473738643,"data":"INFO:     127.0.0.1:46986 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473742084,"data":"INFO:     127.0.0.1:46994 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473745692,"data":"INFO:     127.0.0.1:47002 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473749282,"data":"INFO:     127.0.0.1:47010 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473752886,"data":"INFO:     127.0.0.1:47012 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473756398,"data":"INFO:     127.0.0.1:47020 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473760576,"data":"INFO:     127.0.0.1:47030 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473764088,"data":"INFO:     127.0.0.1:46878 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473767604,"data":"INFO:     127.0.0.1:46888 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.47377107,"data":"INFO:     127.0.0.1:47036 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473774731,"data":"INFO:     127.0.0.1:46898 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473779047,"data":"INFO:     127.0.0.1:47038 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473782936,"data":"INFO:     127.0.0.1:46902 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473786738,"data":"INFO:     127.0.0.1:47042 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473790118,"data":"INFO:     127.0.0.1:47052 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.47379351,"data":"INFO:     127.0.0.1:47078 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.47380241,"data":"INFO:     127.0.0.1:47062 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473805839,"data":"INFO:     127.0.0.1:47090 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473809266,"data":"INFO:     127.0.0.1:47056 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473813073,"data":"INFO:     127.0.0.1:47094 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473816686,"data":"INFO:     127.0.0.1:47070 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473820998,"data":"INFO:     127.0.0.1:47100 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473824507,"data":"INFO:     127.0.0.1:47112 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473827913,"data":"INFO:     127.0.0.1:47126 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.47383128,"data":"INFO:     127.0.0.1:47162 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473836053,"data":"INFO:     127.0.0.1:47192 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.4738479,"data":"INFO:     127.0.0.1:47208 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473850514,"data":"INFO:     127.0.0.1:47168 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473852835,"data":"INFO:     127.0.0.1:47202 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473855063,"data":"INFO:     127.0.0.1:47138 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473857295,"data":"INFO:     127.0.0.1:47152 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473859511,"data":"INFO:     127.0.0.1:47180 - \"POST /v1/completions HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.47386184,"data":"INFO:     127.0.0.1:46196 - \"GET /metrics HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3228.473864086,"data":"INFO:     Shutting down\n"}
+,{"stream_name":"stdout","time":3228.47386628,"data":"INFO:     Waiting for application shutdown.\n"}
+,{"stream_name":"stdout","time":3228.473868536,"data":"INFO:     Application shutdown complete.\n"}
+,{"stream_name":"stdout","time":3228.473870784,"data":"INFO:     Finished server process [135]\n"}
+,{"stream_name":"stdout","time":3228.473872945,"data":"\n"}
+,{"stream_name":"stdout","time":3228.473875028,"data":"# Harness report: http://localhost:8000\n"}
+,{"stream_name":"stdout","time":3228.473877207,"data":"\n"}
+,{"stream_name":"stdout","time":3228.473879348,"data":"Generated 2026-10-18 06:59 UTC.\n"}
+,{"stream_name":"stdout","time":3228.473881508,"data":"\n"}
+,{"stream_name":"stdout","time":3228.47388359,"data":"| Suite | Workload | Measured | Threshold | Outcome | Detail |\n"}
+,{"stream_name":"stdout","time":3228.473885846,"data":"|---|---|---|---|---|---|\n"}
+,{"stream_name":"stdout","time":3228.473888116,"data":"| concurrency | short_chat | 22.3 -\u003e 348.7 tok/s (15.6x) | \u003e= 4.0x at 64 users | PASS | levels [1, 4, 16, 64] |\n"}
+,{"stream_name":"stdout","time":3228.473890844,"data":"| capacity | burst | 0/64 errors, 350.0 tok/s | error rate \u003c= 0% | PASS | E2E p99 23396 ms |\n"}
+,{"stream_name":"stdout","time":3228.473893188,"data":"| prefix_reuse | shared_prefix | TTFT p50 110 -\u003e 110 ms (0% lower) | \u003e= 50% lower | XFAIL | 512 shared of 544 tokens |\n"}
+,{"stream_name":"stdout","time":3228.473898015,"data":"| long_prompt_interference | short_chat | ITL p99 52 -\u003e 50 ms (1.0x) | \u003c= 2.0x | XPASS | 16 long prompts arriving |\n"}
+,{"stream_name":"stdout","time":3228.473900519,"data":"| streaming | short_chat | 128 chunks, 128 tokens | 128 tokens, [DONE] | PASS | ok |\n"}
+,{"stream_name":"stdout","time":3228.473902835,"data":"| latency | short_chat | TTFT p50 95 ms, ITL p50 42.5 ms, 23.3 tok/s | no errors | PASS | 4 requests at 1 user |\n"}
+,{"stream_name":"stdout","time":3228.473905153,"data":"\n"}
+,{"stream_name":"stderr","time":3230.809100667,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":3230.809124318,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":3230.973038931,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":3230.973060179,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":3231.717620471,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":3231.79273855,"data":"[NbConvertApp] Writing 25818 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":3234.173545946,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":3234.669765303,"data":"[NbConvertApp] Writing 307589 bytes to __results__.html\n"}
+]

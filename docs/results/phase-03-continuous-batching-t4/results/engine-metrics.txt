@@ -1,0 +1,70 @@
+# HELP nanoengine_finished_requests_total Requests that finished, by finish reason
+# TYPE nanoengine_finished_requests_total counter
+nanoengine_finished_requests_total{finish_reason="length"} 1308.0
+# HELP nanoengine_finished_requests_created Requests that finished, by finish reason
+# TYPE nanoengine_finished_requests_created gauge
+nanoengine_finished_requests_created{finish_reason="length"} 1.7923070167324e+09
+# HELP nanoengine_generated_tokens_total Tokens generated
+# TYPE nanoengine_generated_tokens_total counter
+nanoengine_generated_tokens_total 171684.0
+# HELP nanoengine_generated_tokens_created Tokens generated
+# TYPE nanoengine_generated_tokens_created gauge
+nanoengine_generated_tokens_created 1.792307007990923e+09
+# HELP nanoengine_step_latency_seconds Time for one model step; prefill runs whole prompts, decode one token per sequence
+# TYPE nanoengine_step_latency_seconds histogram
+nanoengine_step_latency_seconds_bucket{le="0.005",step_kind="prefill"} 0.0
+nanoengine_step_latency_seconds_bucket{le="0.01",step_kind="prefill"} 0.0
+nanoengine_step_latency_seconds_bucket{le="0.025",step_kind="prefill"} 0.0
+nanoengine_step_latency_seconds_bucket{le="0.05",step_kind="prefill"} 602.0
+nanoengine_step_latency_seconds_bucket{le="0.1",step_kind="prefill"} 644.0
+nanoengine_step_latency_seconds_bucket{le="0.25",step_kind="prefill"} 707.0
+nanoengine_step_latency_seconds_bucket{le="0.5",step_kind="prefill"} 734.0
+nanoengine_step_latency_seconds_bucket{le="1.0",step_kind="prefill"} 735.0
+nanoengine_step_latency_seconds_bucket{le="2.5",step_kind="prefill"} 735.0
+nanoengine_step_latency_seconds_bucket{le="5.0",step_kind="prefill"} 735.0
+nanoengine_step_latency_seconds_bucket{le="10.0",step_kind="prefill"} 735.0
+nanoengine_step_latency_seconds_bucket{le="+Inf",step_kind="prefill"} 735.0
+nanoengine_step_latency_seconds_count{step_kind="prefill"} 735.0
+nanoengine_step_latency_seconds_sum{step_kind="prefill"} 47.66013358700093
+nanoengine_step_latency_seconds_bucket{le="0.005",step_kind="decode"} 0.0
+nanoengine_step_latency_seconds_bucket{le="0.01",step_kind="decode"} 0.0
+nanoengine_step_latency_seconds_bucket{le="0.025",step_kind="decode"} 0.0
+nanoengine_step_latency_seconds_bucket{le="0.05",step_kind="decode"} 61352.0
+nanoengine_step_latency_seconds_bucket{le="0.1",step_kind="decode"} 62697.0
+nanoengine_step_latency_seconds_bucket{le="0.25",step_kind="decode"} 62697.0
+nanoengine_step_latency_seconds_bucket{le="0.5",step_kind="decode"} 62697.0
+nanoengine_step_latency_seconds_bucket{le="1.0",step_kind="decode"} 62697.0
+nanoengine_step_latency_seconds_bucket{le="2.5",step_kind="decode"} 62697.0
+nanoengine_step_latency_seconds_bucket{le="5.0",step_kind="decode"} 62697.0
+nanoengine_step_latency_seconds_bucket{le="10.0",step_kind="decode"} 62697.0
+nanoengine_step_latency_seconds_bucket{le="+Inf",step_kind="decode"} 62697.0
+nanoengine_step_latency_seconds_count{step_kind="decode"} 62697.0
+nanoengine_step_latency_seconds_sum{step_kind="decode"} 2412.0527161809937
+# HELP nanoengine_step_latency_seconds_created Time for one model step; prefill runs whole prompts, decode one token per sequence
+# TYPE nanoengine_step_latency_seconds_created gauge
+nanoengine_step_latency_seconds_created{step_kind="prefill"} 1.7923070119384825e+09
+nanoengine_step_latency_seconds_created{step_kind="decode"} 1.7923070120007956e+09
+# HELP nanoengine_waiting_requests Requests queued, not started
+# TYPE nanoengine_waiting_requests gauge
+nanoengine_waiting_requests 0.0
+# HELP nanoengine_running_requests Requests being generated
+# TYPE nanoengine_running_requests gauge
+nanoengine_running_requests 0.0
+# HELP nanoengine_peak_running_requests Most requests generated at the same time since start
+# TYPE nanoengine_peak_running_requests gauge
+nanoengine_peak_running_requests 18.0
+# HELP nanoengine_preemptions_total Sequences evicted from the KV cache to be recomputed later
+# TYPE nanoengine_preemptions_total counter
+nanoengine_preemptions_total 0.0
+# HELP nanoengine_preemptions_created Sequences evicted from the KV cache to be recomputed later
+# TYPE nanoengine_preemptions_created gauge
+nanoengine_preemptions_created 1.7923070079910238e+09
+# HELP nanoengine_kv_cache_total_slots Token slots in the KV pool
+# TYPE nanoengine_kv_cache_total_slots gauge
+nanoengine_kv_cache_total_slots 36864.0
+# HELP nanoengine_kv_cache_reserved_slots Token slots reserved by running sequences
+# TYPE nanoengine_kv_cache_reserved_slots gauge
+nanoengine_kv_cache_reserved_slots 0.0
+# HELP nanoengine_kv_cache_stored_tokens Tokens actually stored; stored / reserved is the memory utilization
+# TYPE nanoengine_kv_cache_stored_tokens gauge
+nanoengine_kv_cache_stored_tokens 0.0

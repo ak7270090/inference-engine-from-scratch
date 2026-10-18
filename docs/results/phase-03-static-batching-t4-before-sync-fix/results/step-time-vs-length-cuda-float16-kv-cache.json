@@ -1,0 +1,32 @@
+[
+  {
+    "sequence_length": 16,
+    "median_step_ms": 40.56429299998854,
+    "min_step_ms": 40.05599699985396
+  },
+  {
+    "sequence_length": 64,
+    "median_step_ms": 40.42429199989783,
+    "min_step_ms": 39.7151520000989
+  },
+  {
+    "sequence_length": 128,
+    "median_step_ms": 40.03107900007308,
+    "min_step_ms": 39.96171300013884
+  },
+  {
+    "sequence_length": 256,
+    "median_step_ms": 39.8060079996867,
+    "min_step_ms": 39.36099199972887
+  },
+  {
+    "sequence_length": 512,
+    "median_step_ms": 39.80686299973968,
+    "min_step_ms": 39.47260599989022
+  },
+  {
+    "sequence_length": 1024,
+    "median_step_ms": 39.528458999939176,
+    "min_step_ms": 39.19262899989917
+  }
+]
