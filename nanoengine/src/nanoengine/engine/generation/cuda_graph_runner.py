@@ -9,6 +9,7 @@ to the scratch slot and are ignored.
 On a CPU (tests) the same padded path runs without capture.
 """
 
+import logging
 from dataclasses import dataclass
 
 import torch
@@ -18,6 +19,8 @@ from nanoengine.engine.memory.slot_allocator import SlotAllocator
 from nanoengine.engine.sequence_state import Sequence
 from nanoengine.models.attention_context import AttentionContext, build_attention_mask
 from nanoengine.models.qwen3 import Qwen3ForCausalLM
+
+logger = logging.getLogger(__name__)
 
 BATCH_SIZE_BUCKETS = (1, 2, 4, 8, 16, 32, 64, 128, 256)
 SMALLEST_CONTEXT_BUCKET = 256
@@ -73,15 +76,21 @@ class DecodeGraphRunner:
         self.context_buckets = build_context_buckets(max_model_len)
         self._graphs: dict[tuple[int, int], DecodeGraph] = {}
         self._graph_memory_pool = torch.cuda.graph_pool_handle() if self._uses_cuda_graphs else None
+        # one warm-up stream for every capture: the allocator caches freed memory per stream
+        self._warmup_stream = torch.cuda.Stream(device) if self._uses_cuda_graphs else None
 
     @property
     def num_captured_graphs(self) -> int:
         return sum(1 for graph in self._graphs.values() if graph.graph is not None)
 
     def capture_all_buckets(self) -> None:
-        """Capture every bucket up front, so no request waits for a capture while being served."""
-        for batch_size in self.batch_buckets:
-            for context_length in self.context_buckets:
+        """Capture every bucket up front, so no request waits for a capture while being served.
+
+        Largest first: graphs share one memory pool, and smaller graphs can then reuse the
+        memory the largest one needed.
+        """
+        for batch_size in reversed(self.batch_buckets):
+            for context_length in reversed(self.context_buckets):
                 if (batch_size, context_length) not in self._graphs:
                     self._create_graph(batch_size, context_length)
 
@@ -164,17 +173,26 @@ class DecodeGraphRunner:
         )
         self._fill_padding(decode_graph)
         if self._uses_cuda_graphs:
-            self._capture(decode_graph)
+            try:
+                self._capture(decode_graph)
+            except torch.cuda.OutOfMemoryError:
+                logger.warning(
+                    "not enough GPU memory to capture a decode graph; this bucket runs eagerly",
+                    extra={"batch_size": batch_size, "context_length": context_length},
+                )
+                decode_graph.graph = None
+                torch.cuda.empty_cache()
         self._graphs[(batch_size, context_length)] = decode_graph
         return decode_graph
 
     def _capture(self, decode_graph: DecodeGraph) -> None:
-        warmup_stream = torch.cuda.Stream(self._device)
-        warmup_stream.wait_stream(torch.cuda.current_stream(self._device))
-        with torch.cuda.stream(warmup_stream):
+        torch.cuda.synchronize(self._device)
+        self._warmup_stream.wait_stream(torch.cuda.current_stream(self._device))
+        with torch.cuda.stream(self._warmup_stream):
             for _ in range(WARMUP_RUNS_BEFORE_CAPTURE):
                 self._forward(decode_graph)
-        torch.cuda.current_stream(self._device).wait_stream(warmup_stream)
+        torch.cuda.current_stream(self._device).wait_stream(self._warmup_stream)
+        torch.cuda.synchronize(self._device)
         decode_graph.graph = torch.cuda.CUDAGraph()
         with torch.cuda.graph(decode_graph.graph, pool=self._graph_memory_pool):
             decode_graph.logits = self._forward(decode_graph)

@@ -207,3 +207,24 @@ def test_step_timing_measures_the_graph_path(tiny_model, tmp_path) -> None:
 
     assert benchmark.description == "KV cache, CUDA graphs"
     assert len(timings) == 2
+
+
+def raise_out_of_memory(decode_graph) -> None:
+    raise torch.cuda.OutOfMemoryError("pretend the GPU is full")
+
+
+def test_a_failed_capture_falls_back_to_the_eager_path(tiny_model, monkeypatch) -> None:
+    runner = build_runner_with_graph_path(tiny_model, use_graph_path=True)
+    graphs = runner.decode_graphs
+    monkeypatch.setattr(graphs, "_uses_cuda_graphs", True)
+    monkeypatch.setattr(graphs, "_capture", raise_out_of_memory)
+    monkeypatch.setattr(torch.cuda, "empty_cache", lambda: None)
+    sequences = [Sequence.from_request(build_request("r", PROMPTS[0]), CPU)]
+
+    run_greedy(runner, sequences, steps=4)
+
+    assert graphs.num_captured_graphs == 0
+    assert (
+        sequences[0].token_ids[len(PROMPTS[0]) :]
+        == expected_greedy_tokens(tiny_model, PROMPTS[0])[:4]
+    )

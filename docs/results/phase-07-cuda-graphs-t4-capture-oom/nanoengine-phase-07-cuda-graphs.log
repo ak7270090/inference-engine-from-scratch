@@ -1,0 +1,128 @@
+[{"stream_name":"stderr","time":7.467268889,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.46732056,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.467327598,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.467332083,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.07940158,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.079434886,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.079444062,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.079447073,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":9.838447473,"data":"$ nvidia-smi -\u003e 0\n"}
+,{"stream_name":"stdout","time":9.838468916,"data":"Sun Oct 18 11:08:04 2026       \n"}
+,{"stream_name":"stdout","time":9.838472321,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":9.838475007,"data":"| NVIDIA-SMI 580.178.04             Driver Version: 580.178.04     CUDA Version: 13.0     |\n"}
+,{"stream_name":"stdout","time":9.838477593,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":9.838480081,"data":"| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n"}
+,{"stream_name":"stdout","time":9.838482519,"data":"| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n"}
+,{"stream_name":"stdout","time":9.838484871,"data":"|                                         |                        |               MIG M. |\n"}
+,{"stream_name":"stdout","time":9.838487292,"data":"|=========================================+========================+======================|\n"}
+,{"stream_name":"stdout","time":9.838489647,"data":"|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":9.838492001,"data":"| N/A   57C    P8             10W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":9.838494415,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":9.838496774,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":9.838499122,"data":"|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":9.838501466,"data":"| N/A   51C    P8             10W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":9.838504364,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":9.838521643,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":9.838525858,"data":"\n"}
+,{"stream_name":"stdout","time":9.838529639,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":9.838533449,"data":"| Processes:                                                                              |\n"}
+,{"stream_name":"stdout","time":9.838546559,"data":"|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n"}
+,{"stream_name":"stdout","time":9.838550449,"data":"|        ID   ID                                                               Usage      |\n"}
+,{"stream_name":"stdout","time":9.838554111,"data":"|=========================================================================================|\n"}
+,{"stream_name":"stdout","time":9.838557761,"data":"|  No running processes found                                                             |\n"}
+,{"stream_name":"stdout","time":9.838562259,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":9.838570973,"data":" \n"}
+,{"stream_name":"stdout","time":11.521005381,"data":"$ git clone --depth 1 --branch main https://github.com/ak7270090/inference-engine-from-scratch.git /tmp/repo -\u003e 0\n"}
+,{"stream_name":"stdout","time":11.521043433,"data":" Cloning into '/tmp/repo'...\n"}
+,{"stream_name":"stdout","time":11.52104945,"data":"\n"}
+,{"stream_name":"stdout","time":22.563414515,"data":"$ /usr/bin/python3 -m pip install -q -e /tmp/repo/engine-harness -\u003e 0\n"}
+,{"stream_name":"stdout","time":22.563451841,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.4/80.4 kB 984.4 kB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":22.563456327,"data":" \n"}
+,{"stream_name":"stdout","time":31.251118756,"data":"$ /usr/bin/python3 -m pip install -q -e /tmp/repo/nanoengine -\u003e 0\n"}
+,{"stream_name":"stdout","time":31.251153112,"data":" \n"}
+,{"stream_name":"stdout","time":633.075267556,"data":"$ /usr/bin/python3 -m engineharness wait -\u003e 1\n"}
+,{"stream_name":"stdout","time":633.07533518,"data":"engine not ready in time\n"}
+,{"stream_name":"stdout","time":633.075344195,"data":" \n"}
+,{"stream_name":"stdout","time":640.852334682,"data":"$ /usr/bin/python3 -m nanoengine.step_timing --output-dir /kaggle/working/results -\u003e 0\n"}
+,{"stream_name":"stdout","time":640.852372818,"data":" \n"}
+,{"stream_name":"stdout","time":640.852378824,"data":"Fetching 4 files:   0%|          | 0/4 [00:00\u003c?, ?it/s]\n"}
+,{"stream_name":"stdout","time":640.85238531,"data":"Fetching 4 files: 100%|██████████| 4/4 [00:00\u003c00:00, 1009.28it/s]\n"}
+,{"stream_name":"stdout","time":640.852391731,"data":"\n"}
+,{"stream_name":"stdout","time":640.863350716,"data":"^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863369914,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/app.py\", line 20, in run_engine_lifespan\n"}
+,{"stream_name":"stdout","time":640.863375918,"data":"    runtime = runtime or await asyncio.to_thread(create_engine_runtime, settings)\n"}
+,{"stream_name":"stdout","time":640.863380692,"data":"                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863386056,"data":"  File \"/usr/lib/python3.13/asyncio/threads.py\", line 26, in to_thread\n"}
+,{"stream_name":"stdout","time":640.863391504,"data":"    return await loop.run_in_executor(None, func_call)\n"}
+,{"stream_name":"stdout","time":640.863407596,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863412974,"data":"  File \"/usr/lib/python3.13/concurrent/futures/thread.py\", line 59, in run\n"}
+,{"stream_name":"stdout","time":640.863417785,"data":"    result = self.fn(*self.args, **self.kwargs)\n"}
+,{"stream_name":"stdout","time":640.863422097,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/runtime.py\", line 197, in create_engine_runtime\n"}
+,{"stream_name":"stdout","time":640.863435161,"data":"    return build_engine_runtime(model, load_text_tokenizer(model_dir), settings)\n"}
+,{"stream_name":"stdout","time":640.863439142,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/runtime.py\", line 185, in build_engine_runtime\n"}
+,{"stream_name":"stdout","time":640.863459608,"data":"    engine=create_engine(model, tokenizer.stop_token_ids, settings, metrics),\n"}
+,{"stream_name":"stdout","time":640.863463354,"data":"           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863466787,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/runtime.py\", line 155, in create_engine\n"}
+,{"stream_name":"stdout","time":640.863470504,"data":"    decode_graphs.capture_all_buckets()\n"}
+,{"stream_name":"stdout","time":640.863473908,"data":"    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n"}
+,{"stream_name":"stdout","time":640.863477354,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/generation/cuda_graph_runner.py\", line 86, in capture_all_buckets\n"}
+,{"stream_name":"stdout","time":640.863481317,"data":"    self._create_graph(batch_size, context_length)\n"}
+,{"stream_name":"stdout","time":640.863485134,"data":"    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863488745,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/generation/cuda_graph_runner.py\", line 167, in _create_graph\n"}
+,{"stream_name":"stdout","time":640.86349265,"data":"    self._capture(decode_graph)\n"}
+,{"stream_name":"stdout","time":640.863496215,"data":"    ~~~~~~~~~~~~~^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.86349967,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/generation/cuda_graph_runner.py\", line 176, in _capture\n"}
+,{"stream_name":"stdout","time":640.863503558,"data":"    self._forward(decode_graph)\n"}
+,{"stream_name":"stdout","time":640.863507238,"data":"    ~~~~~~~~~~~~~^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863510797,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/generation/cuda_graph_runner.py\", line 152, in _forward\n"}
+,{"stream_name":"stdout","time":640.863514615,"data":"    hidden_states = self._model(decode_graph.token_ids, context)\n"}
+,{"stream_name":"stdout","time":640.863518111,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":640.863523003,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":640.863526769,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863530419,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":640.863534223,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":640.863537697,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py\", line 195, in forward\n"}
+,{"stream_name":"stdout","time":640.863541374,"data":"    return self.model(token_ids, context)\n"}
+,{"stream_name":"stdout","time":640.863544745,"data":"           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863547923,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":640.863551311,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":640.863555551,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863564567,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":640.863568665,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":640.863572246,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py\", line 177, in forward\n"}
+,{"stream_name":"stdout","time":640.863576024,"data":"    hidden_states = layer(hidden_states, cos, sin, context)\n"}
+,{"stream_name":"stdout","time":640.86357964,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":640.863583487,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":640.863586997,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863590489,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":640.863594043,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":640.863597399,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py\", line 147, in forward\n"}
+,{"stream_name":"stdout","time":640.863600899,"data":"    hidden_states = hidden_states + self.self_attn(\n"}
+,{"stream_name":"stdout","time":640.863604805,"data":"                                    ~~~~~~~~~~~~~~^\n"}
+,{"stream_name":"stdout","time":640.863608584,"data":"        self.input_layernorm(hidden_states), cos, sin, context\n"}
+,{"stream_name":"stdout","time":640.863612961,"data":"        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.86361758,"data":"    )\n"}
+,{"stream_name":"stdout","time":640.86362944,"data":"    ^\n"}
+,{"stream_name":"stdout","time":640.86363605,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":640.863640674,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":640.863644536,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":640.863648497,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":640.863652479,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":640.863673464,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py\", line 113, in forward\n"}
+,{"stream_name":"stdout","time":640.863677541,"data":"    attention = run_cached_attention(queries, keys, values, context, self.layer_index)\n"}
+,{"stream_name":"stdout","time":640.863682341,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/models/attention_context.py\", line 104, in run_cached_attention\n"}
+,{"stream_name":"stdout","time":640.863686702,"data":"    context_values = context_values.transpose(1, 2).repeat_interleave(heads_per_kv_head, dim=1)\n"}
+,{"stream_name":"stdout","time":640.863694183,"data":"torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 8.81 MiB is free. Including non-PyTorch memory, this process has 14.55 GiB memory in use. Of the allocated memory 13.62 GiB is allocated by PyTorch, with 19.47 MiB allocated in private pools (e.g., CUDA Graphs), and 692.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)\n"}
+,{"stream_name":"stdout","time":640.863707745,"data":"\n"}
+,{"stream_name":"stdout","time":640.86371126,"data":"ERROR:    Application startup failed. Exiting.\n"}
+,{"stream_name":"stdout","time":640.863714889,"data":"\n"}
+,{"stream_name":"stdout","time":640.863718193,"data":"no harness report\n"}
+,{"stream_name":"stderr","time":643.392671041,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":643.392700345,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":643.565556356,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":643.565582519,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":644.344083773,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":644.421969532,"data":"[NbConvertApp] Writing 19292 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":646.932867419,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":647.472175234,"data":"[NbConvertApp] Writing 302435 bytes to __results__.html\n"}
+]

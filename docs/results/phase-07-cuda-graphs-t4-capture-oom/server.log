@@ -1,0 +1,94 @@
+INFO:     Started server process [135]
+INFO:     Waiting for application startup.
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-0.6B/revision/main "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-0.6B/tree/c1899de289a04d12100db370d81485cdf75e47ca?recursive=true&expand=false "HTTP/1.1 200 OK"
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-0.6B/resolve/c1899de289a04d12100db370d81485cdf75e47ca/config.json "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/config.json "HTTP/1.1 200 OK"
+Fetching 4 files:  25%|██▌       | 1/4 [00:00<00:00,  8.49it/s]INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-0.6B/resolve/c1899de289a04d12100db370d81485cdf75e47ca/generation_config.json "HTTP/1.1 307 Temporary Redirect"
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/generation_config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/generation_config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-0.6B/xet-read-token/c1899de289a04d12100db370d81485cdf75e47ca "HTTP/1.1 200 OK"
+Fetching 4 files:  75%|███████▌  | 3/4 [00:00<00:00,  3.15it/s]Fetching 4 files: 100%|██████████| 4/4 [00:03<00:00,  1.12s/it]Fetching 4 files: 100%|██████████| 4/4 [00:03<00:00,  1.13it/s]
+ERROR:    Traceback (most recent call last):
+  File "/usr/local/lib/python3.13/dist-packages/starlette/routing.py", line 648, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/usr/lib/python3.13/contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/fastapi/routing.py", line 240, in merged_lifespan
+    async with original_context(app) as maybe_original_state:
+               ~~~~~~~~~~~~~~~~^^^^^
+  File "/usr/lib/python3.13/contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/repo/nanoengine/src/nanoengine/app.py", line 20, in run_engine_lifespan
+    runtime = runtime or await asyncio.to_thread(create_engine_runtime, settings)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/asyncio/threads.py", line 26, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/tmp/repo/nanoengine/src/nanoengine/engine/runtime.py", line 197, in create_engine_runtime
+    return build_engine_runtime(model, load_text_tokenizer(model_dir), settings)
+  File "/tmp/repo/nanoengine/src/nanoengine/engine/runtime.py", line 185, in build_engine_runtime
+    engine=create_engine(model, tokenizer.stop_token_ids, settings, metrics),
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/repo/nanoengine/src/nanoengine/engine/runtime.py", line 155, in create_engine
+    decode_graphs.capture_all_buckets()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/tmp/repo/nanoengine/src/nanoengine/engine/generation/cuda_graph_runner.py", line 86, in capture_all_buckets
+    self._create_graph(batch_size, context_length)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/repo/nanoengine/src/nanoengine/engine/generation/cuda_graph_runner.py", line 167, in _create_graph
+    self._capture(decode_graph)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/tmp/repo/nanoengine/src/nanoengine/engine/generation/cuda_graph_runner.py", line 176, in _capture
+    self._forward(decode_graph)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/tmp/repo/nanoengine/src/nanoengine/engine/generation/cuda_graph_runner.py", line 152, in _forward
+    hidden_states = self._model(decode_graph.token_ids, context)
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py", line 195, in forward
+    return self.model(token_ids, context)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py", line 177, in forward
+    hidden_states = layer(hidden_states, cos, sin, context)
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py", line 147, in forward
+    hidden_states = hidden_states + self.self_attn(
+                                    ~~~~~~~~~~~~~~^
+        self.input_layernorm(hidden_states), cos, sin, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py", line 113, in forward
+    attention = run_cached_attention(queries, keys, values, context, self.layer_index)
+  File "/tmp/repo/nanoengine/src/nanoengine/models/attention_context.py", line 104, in run_cached_attention
+    context_values = context_values.transpose(1, 2).repeat_interleave(heads_per_kv_head, dim=1)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 8.81 MiB is free. Including non-PyTorch memory, this process has 14.55 GiB memory in use. Of the allocated memory 13.62 GiB is allocated by PyTorch, with 19.47 MiB allocated in private pools (e.g., CUDA Graphs), and 692.81 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+ERROR:    Application startup failed. Exiting.
