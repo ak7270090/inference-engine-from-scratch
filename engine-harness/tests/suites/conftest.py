@@ -10,6 +10,7 @@ from engineharness.constants import (
     OUTCOME_PASS,
     OUTCOME_XFAIL,
     OUTCOME_XPASS,
+    STRICT_EXPECTED_FAILURE_SUITES,
 )
 from engineharness.report_writer import HarnessReport
 from engineharness.workloads import HubTokenizer, TextTokenizer
@@ -53,8 +54,9 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
         if item_suites & settings.skipped_suites:
             item.add_marker(pytest.mark.skip(reason="suite does not apply to this phase"))
         elif item_suites & settings.expected_failures:
+            is_strict = bool(item_suites & STRICT_EXPECTED_FAILURE_SUITES)
             item.add_marker(
-                pytest.mark.xfail(strict=True, reason="expected to fail for this phase")
+                pytest.mark.xfail(strict=is_strict, reason="expected to fail for this phase")
             )
 
 

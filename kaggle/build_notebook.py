@@ -23,13 +23,17 @@ HARNESS_WORKLOADS = ["short_chat", "long_prompt", "shared_prefix", "mixed_length
 import shutil
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 
 
-def run_and_print(command, **options):
+def run_and_print(command, save_to=None, **options):
     result = subprocess.run(command, capture_output=True, text=True, **options)
     print("$", " ".join(command), "->", result.returncode)
     print(result.stdout[-20000:], result.stderr[-5000:])
+    if save_to:
+        Path(save_to).parent.mkdir(parents=True, exist_ok=True)
+        Path(save_to).write_text(result.stdout, encoding="utf-8")
     return result.returncode
 
 
@@ -72,7 +76,10 @@ harness_dir = f"{REPO_DIR}/engine-harness"
 wait_command = [sys.executable, "-m", "engineharness", "wait"]
 if run_and_print(wait_command, cwd=harness_dir, env=harness_env) == 0:
     run_and_print(
-        [sys.executable, "-m", "pytest", "tests/suites", "-rxXs"], cwd=harness_dir, env=harness_env
+        [sys.executable, "-m", "pytest", "tests/suites", "-rxXs"],
+        save_to=f"{WORK_DIR}/results/harness-pytest.txt",
+        cwd=harness_dir,
+        env=harness_env,
     )
     for workload in HARNESS_WORKLOADS:
         run_and_print(
@@ -80,6 +87,9 @@ if run_and_print(wait_command, cwd=harness_dir, env=harness_env) == 0:
             cwd=harness_dir,
             env=harness_env,
         )
+    # peak concurrency, preemptions and KV usage, as the engine itself counted them
+    with urllib.request.urlopen("http://localhost:8000/metrics", timeout=30) as response:
+        Path(f"{WORK_DIR}/results/engine-metrics.txt").write_bytes(response.read())
 if TARGET != "vllm":
     run_and_print(
         [sys.executable, "-m", "nanoengine.step_timing", "--output-dir", f"{WORK_DIR}/results"]

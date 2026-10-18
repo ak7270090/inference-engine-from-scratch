@@ -40,6 +40,9 @@ ALL_SUITES = frozenset(
     }
 )
 
+# a performance threshold met earlier than planned is reported as XPASS, not a failure
+STRICT_EXPECTED_FAILURE_SUITES = frozenset({SUITE_EQUIVALENCE, SUITE_STREAMING, SUITE_LATENCY})
+
 OUTCOME_PASS = "PASS"
 OUTCOME_FAIL = "FAIL"
 OUTCOME_XFAIL = "XFAIL"
