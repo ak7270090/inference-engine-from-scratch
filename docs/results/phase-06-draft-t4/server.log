@@ -1,0 +1,104 @@
+INFO:     Started server process [134]
+INFO:     Waiting for application startup.
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-1.7B/revision/main "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-1.7B/tree/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e?recursive=true&expand=false "HTTP/1.1 200 OK"
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-1.7B/resolve/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/config.json "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-1.7B/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-1.7B/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/config.json "HTTP/1.1 200 OK"
+Fetching 5 files:  20%|██        | 1/5 [00:00<00:00,  8.94it/s]INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-1.7B/resolve/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/generation_config.json "HTTP/1.1 307 Temporary Redirect"
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-1.7B/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/generation_config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-1.7B/xet-read-token/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-1.7B/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/generation_config.json "HTTP/1.1 200 OK"
+Fetching 5 files:  40%|████      | 2/5 [00:00<00:00,  8.65it/s]Fetching 5 files:  60%|██████    | 3/5 [00:00<00:00,  3.03it/s]Fetching 5 files:  80%|████████  | 4/5 [00:04<00:01,  1.62s/it]Fetching 5 files: 100%|██████████| 5/5 [00:08<00:00,  2.59s/it]Fetching 5 files: 100%|██████████| 5/5 [00:08<00:00,  1.75s/it]
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-0.6B/revision/main "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-0.6B/tree/c1899de289a04d12100db370d81485cdf75e47ca?recursive=true&expand=false "HTTP/1.1 200 OK"
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-0.6B/resolve/c1899de289a04d12100db370d81485cdf75e47ca/config.json "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/config.json "HTTP/1.1 200 OK"
+Fetching 4 files:  25%|██▌       | 1/4 [00:00<00:00,  9.27it/s]INFO:httpx:HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-0.6B/resolve/c1899de289a04d12100db370d81485cdf75e47ca/generation_config.json "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/generation_config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/generation_config.json "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-0.6B/xet-read-token/c1899de289a04d12100db370d81485cdf75e47ca "HTTP/1.1 200 OK"
+Fetching 4 files:  75%|███████▌  | 3/4 [00:00<00:00,  3.72it/s]Fetching 4 files: 100%|██████████| 4/4 [00:03<00:00,  1.03s/it]Fetching 4 files: 100%|██████████| 4/4 [00:03<00:00,  1.24it/s]
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:60614 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60618 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60618 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60630 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60630 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60630 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60630 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60630 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42718 - "POST /v1/completions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37638 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [134]

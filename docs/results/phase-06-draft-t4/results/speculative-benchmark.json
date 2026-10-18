@@ -1,0 +1,18 @@
+[
+  {
+    "prompt_style": "code_edit",
+    "baseline_tokens_per_second": 27.601775866603376,
+    "speculative_tokens_per_second": 24.196489097459615,
+    "speed_up": 0.8766279827210695,
+    "acceptance_rate": 0.8362068965517241,
+    "tokens_per_target_pass": 4.129032258064516
+  },
+  {
+    "prompt_style": "chat",
+    "baseline_tokens_per_second": 27.668672059761548,
+    "speculative_tokens_per_second": 17.532408201471142,
+    "speed_up": 0.6336555713119483,
+    "acceptance_rate": 0.5375,
+    "tokens_per_target_pass": 3.0476190476190474
+  }
+]
