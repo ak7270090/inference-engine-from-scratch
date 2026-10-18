@@ -1,0 +1,49 @@
+# HELP nanoengine_finished_requests_total Requests that finished, by finish reason
+# TYPE nanoengine_finished_requests_total counter
+# HELP nanoengine_generated_tokens_total Tokens generated
+# TYPE nanoengine_generated_tokens_total counter
+nanoengine_generated_tokens_total 0.0
+# HELP nanoengine_generated_tokens_created Tokens generated
+# TYPE nanoengine_generated_tokens_created gauge
+nanoengine_generated_tokens_created 1.7923226069886642e+09
+# HELP nanoengine_step_latency_seconds Time for one model step; prefill runs whole prompts, decode one token per sequence
+# TYPE nanoengine_step_latency_seconds histogram
+# HELP nanoengine_waiting_requests Requests queued, not started
+# TYPE nanoengine_waiting_requests gauge
+nanoengine_waiting_requests 0.0
+# HELP nanoengine_running_requests Requests being generated
+# TYPE nanoengine_running_requests gauge
+nanoengine_running_requests 0.0
+# HELP nanoengine_peak_running_requests Most requests generated at the same time since start
+# TYPE nanoengine_peak_running_requests gauge
+nanoengine_peak_running_requests 61.0
+# HELP nanoengine_preemptions_total Sequences evicted from the KV cache to be recomputed later
+# TYPE nanoengine_preemptions_total counter
+nanoengine_preemptions_total 0.0
+# HELP nanoengine_preemptions_created Sequences evicted from the KV cache to be recomputed later
+# TYPE nanoengine_preemptions_created gauge
+nanoengine_preemptions_created 1.792322606988765e+09
+# HELP nanoengine_kv_cache_total_slots Token slots in the KV pool
+# TYPE nanoengine_kv_cache_total_slots gauge
+nanoengine_kv_cache_total_slots 37440.0
+# HELP nanoengine_kv_cache_reserved_slots Token slots reserved by running sequences
+# TYPE nanoengine_kv_cache_reserved_slots gauge
+nanoengine_kv_cache_reserved_slots 0.0
+# HELP nanoengine_kv_cache_stored_tokens Tokens actually stored; stored / reserved is the memory utilization
+# TYPE nanoengine_kv_cache_stored_tokens gauge
+nanoengine_kv_cache_stored_tokens 0.0
+# HELP nanoengine_prefix_cache_hit_tokens Prompt tokens taken from the prefix cache instead of computed, since start
+# TYPE nanoengine_prefix_cache_hit_tokens gauge
+nanoengine_prefix_cache_hit_tokens 0.0
+# HELP nanoengine_speculative_proposed_tokens_total Tokens guessed by the speculative proposer
+# TYPE nanoengine_speculative_proposed_tokens_total counter
+nanoengine_speculative_proposed_tokens_total 0.0
+# HELP nanoengine_speculative_proposed_tokens_created Tokens guessed by the speculative proposer
+# TYPE nanoengine_speculative_proposed_tokens_created gauge
+nanoengine_speculative_proposed_tokens_created 1.7923226069888067e+09
+# HELP nanoengine_speculative_accepted_tokens_total Guessed tokens the target model kept; accepted / proposed is the acceptance rate
+# TYPE nanoengine_speculative_accepted_tokens_total counter
+nanoengine_speculative_accepted_tokens_total 0.0
+# HELP nanoengine_speculative_accepted_tokens_created Guessed tokens the target model kept; accepted / proposed is the acceptance rate
+# TYPE nanoengine_speculative_accepted_tokens_created gauge
+nanoengine_speculative_accepted_tokens_created 1.7923226069888158e+09

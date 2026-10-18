@@ -93,15 +93,17 @@ def run_cached_attention(
         values.transpose(1, 2).reshape(vector_shape),
     )
 
-    heads_per_kv_head = queries.shape[1] // keys.shape[1]
     context_keys = read_from_cache(
         context.key_caches[layer_index], key_scales, context.context_slots, queries.dtype
     )
     context_values = read_from_cache(
         context.value_caches[layer_index], value_scales, context.context_slots, queries.dtype
     )
-    context_keys = context_keys.transpose(1, 2).repeat_interleave(heads_per_kv_head, dim=1)
-    context_values = context_values.transpose(1, 2).repeat_interleave(heads_per_kv_head, dim=1)
+    # enable_gqa lets each KV head serve its group of query heads without copying it per head
     return functional.scaled_dot_product_attention(
-        queries, context_keys, context_values, attn_mask=context.attention_mask
+        queries,
+        context_keys.transpose(1, 2),
+        context_values.transpose(1, 2),
+        attn_mask=context.attention_mask,
+        enable_gqa=True,
     )

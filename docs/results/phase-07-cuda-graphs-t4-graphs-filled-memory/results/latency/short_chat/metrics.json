@@ -1,0 +1,30 @@
+[
+  {
+    "workload": "short_chat",
+    "concurrency": 1,
+    "request_count": 4,
+    "error_count": 4,
+    "total_completion_tokens": 0,
+    "wall_seconds": 0.027339519999998174,
+    "total_tokens_per_second": 0.0,
+    "per_user_tokens_per_second": 0.0,
+    "ttft": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "inter_token": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "end_to_end": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    }
+  }
+]

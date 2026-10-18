@@ -25,6 +25,10 @@ logger = logging.getLogger(__name__)
 BATCH_SIZE_BUCKETS = (1, 2, 4, 8, 16, 32, 64, 128, 256)
 SMALLEST_CONTEXT_BUCKET = 256
 WARMUP_RUNS_BEFORE_CAPTURE = 2
+# memory left free for prefill steps and eager decodes after all captures
+GPU_MEMORY_RESERVE_BYTES = 2 * 1024**3
+# per (sequence, context token, KV head, dim): gathered keys and values, plus slack
+CAPTURE_BYTES_FACTOR = 4
 
 
 def build_buckets(largest: int, candidates: tuple[int, ...]) -> list[int]:
@@ -65,15 +69,17 @@ class DecodeGraphRunner:
         allocator: SlotAllocator,
         device: torch.device,
         max_num_seqs: int,
-        max_model_len: int,
+        max_context_length: int,
     ) -> None:
+        """Graphs cover up to ``max_num_seqs`` sequences and ``max_context_length`` tokens;
+        anything larger decodes eagerly."""
         self._model = model
         self._pool = pool
         self._allocator = allocator
         self._device = device
         self._uses_cuda_graphs = device.type == "cuda"
         self.batch_buckets = build_buckets(max_num_seqs, BATCH_SIZE_BUCKETS)
-        self.context_buckets = build_context_buckets(max_model_len)
+        self.context_buckets = build_context_buckets(max_context_length)
         self._graphs: dict[tuple[int, int], DecodeGraph] = {}
         self._graph_memory_pool = torch.cuda.graph_pool_handle() if self._uses_cuda_graphs else None
         # one warm-up stream for every capture: the allocator caches freed memory per stream
@@ -172,7 +178,12 @@ class DecodeGraphRunner:
             context_lengths=torch.ones(batch_size, **index_options),
         )
         self._fill_padding(decode_graph)
-        if self._uses_cuda_graphs:
+        if self._uses_cuda_graphs and not self._has_memory_for(batch_size, context_length):
+            logger.warning(
+                "skipping a decode graph to keep GPU memory free; this bucket runs eagerly",
+                extra={"batch_size": batch_size, "context_length": context_length},
+            )
+        elif self._uses_cuda_graphs:
             try:
                 self._capture(decode_graph)
             except torch.cuda.OutOfMemoryError:
@@ -184,6 +195,21 @@ class DecodeGraphRunner:
                 torch.cuda.empty_cache()
         self._graphs[(batch_size, context_length)] = decode_graph
         return decode_graph
+
+    def _has_memory_for(self, batch_size: int, context_length: int) -> bool:
+        """Capture only if it leaves the reserve free: a failed capture can leak its memory."""
+        free_bytes, _ = torch.cuda.mem_get_info(self._device)
+        config = self._model.config
+        element_size = self._model.model.embed_tokens.weight.element_size()
+        needed_bytes = (
+            CAPTURE_BYTES_FACTOR
+            * batch_size
+            * context_length
+            * config.num_key_value_heads
+            * config.head_dim
+            * element_size
+        )
+        return free_bytes - needed_bytes > GPU_MEMORY_RESERVE_BYTES
 
     def _capture(self, decode_graph: DecodeGraph) -> None:
         torch.cuda.synchronize(self._device)

@@ -149,7 +149,12 @@ def create_engine(
     decode_graphs = None
     if settings.cuda_graphs:
         decode_graphs = DecodeGraphRunner(
-            model, pool, allocator, device, settings.max_num_seqs, settings.max_model_len
+            model,
+            pool,
+            allocator,
+            device,
+            settings.max_num_seqs,
+            min(settings.max_model_len, settings.cuda_graph_max_context),
         )
         if device.type == "cuda":
             decode_graphs.capture_all_buckets()

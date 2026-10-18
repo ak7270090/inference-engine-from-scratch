@@ -1,0 +1,294 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.15, pytest-8.4.2, pluggy-1.6.0
+rootdir: /tmp/repo/engine-harness
+configfile: pyproject.toml
+plugins: typeguard-4.6.0, anyio-4.14.2, langsmith-0.12.1
+collected 7 items
+
+tests/suites/test_concurrency_and_capacity.py FF                         [ 28%]
+tests/suites/test_equivalence.py s                                       [ 42%]
+tests/suites/test_prefix_and_interference.py FF                          [ 71%]
+tests/suites/test_streaming_and_latency.py FF                            [100%]
+
+=================================== FAILURES ===================================
+____________________ test_total_throughput_grows_with_users ____________________
+
+request = <FixtureRequest for <Function test_total_throughput_grows_with_users>>
+harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])
+harness_report = <engineharness.report_writer.HarnessReport object at 0x7dc397b71400>
+engine_session = <aiohttp.client.ClientSession object at 0x7dc3968c4d70>
+engine_tokenizer = <engineharness.workloads.HubTokenizer object at 0x7dc397b73770>
+
+    @pytest.mark.concurrency
+    async def test_total_throughput_grows_with_users(
+        request, harness_settings, harness_report, engine_session, engine_tokenizer
+    ) -> None:
+        spec = get_workload_spec(harness_settings.workload_scale, WORKLOAD_SHORT_CHAT)
+        requests = build_requests(spec, engine_tokenizer, harness_settings.seed)
+        levels = harness_settings.concurrency_levels
+    
+        metrics = await run_concurrency_sweep(
+            engine_session, requests, levels, harness_settings.model_id, WORKLOAD_SHORT_CHAT
+        )
+        write_sweep_results(harness_settings.results_dir, metrics, harness_settings.target_url)
+        speedup = metrics[-1].total_tokens_per_second / max(metrics[0].total_tokens_per_second, 1e-9)
+    
+        harness_report.record(
+            request.node.nodeid,
+            SuiteResult(
+                SUITE_CONCURRENCY,
+                WORKLOAD_SHORT_CHAT,
+                f"{metrics[0].total_tokens_per_second:.1f} -> "
+                f"{metrics[-1].total_tokens_per_second:.1f} tok/s ({speedup:.1f}x)",
+                f">= {harness_settings.concurrency_min_speedup:.1f}x at {levels[-1]} users",
+                f"levels {levels}",
+            ),
+        )
+>       assert all(level.error_count == 0 for level in metrics)
+E       assert False
+E        +  where False = all(<generator object test_total_throughput_grows_with_users.<locals>.<genexpr> at 0x7dc386972dc0>)
+
+tests/suites/test_concurrency_and_capacity.py:43: AssertionError
+---------------------------- Captured stderr setup -----------------------------
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+------------------------------ Captured log setup ------------------------------
+WARNING  huggingface_hub.utils._http:_http.py:955 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+------------------------------ Captured log call -------------------------------
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+______________ test_a_burst_of_requests_is_served_without_errors _______________
+
+request = <FixtureRequest for <Function test_a_burst_of_requests_is_served_without_errors>>
+harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])
+harness_report = <engineharness.report_writer.HarnessReport object at 0x7dc397b71400>
+engine_session = <aiohttp.client.ClientSession object at 0x7dc386a074d0>
+engine_tokenizer = <engineharness.workloads.HubTokenizer object at 0x7dc397b73770>
+
+    @pytest.mark.capacity
+    async def test_a_burst_of_requests_is_served_without_errors(
+        request, harness_settings, harness_report, engine_session, engine_tokenizer
+    ) -> None:
+        spec = get_workload_spec(harness_settings.workload_scale, WORKLOAD_BURST)
+        requests = build_requests(spec, engine_tokenizer, harness_settings.seed)
+    
+        metrics = await run_concurrency_level(
+            engine_session, requests, len(requests), harness_settings.model_id, WORKLOAD_BURST
+        )
+        error_rate = metrics.error_count / metrics.request_count
+    
+        harness_report.record(
+            request.node.nodeid,
+            SuiteResult(
+                SUITE_CAPACITY,
+                WORKLOAD_BURST,
+                f"{metrics.error_count}/{metrics.request_count} errors, "
+                f"{metrics.total_tokens_per_second:.1f} tok/s",
+                f"error rate <= {harness_settings.capacity_max_error_rate:.0%}",
+                f"E2E p99 {metrics.end_to_end.p99_ms:.0f} ms",
+            ),
+        )
+>       assert error_rate <= harness_settings.capacity_max_error_rate
+E       AssertionError: assert 1.0 <= 0.0
+E        +  where 0.0 = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths']).capacity_max_error_rate
+
+tests/suites/test_concurrency_and_capacity.py:70: AssertionError
+______________ test_shared_prompt_start_cuts_time_to_first_token _______________
+
+request = <FixtureRequest for <Function test_shared_prompt_start_cuts_time_to_first_token>>
+harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])
+harness_report = <engineharness.report_writer.HarnessReport object at 0x7dc397b71400>
+engine_session = <aiohttp.client.ClientSession object at 0x7dc386a04690>
+engine_tokenizer = <engineharness.workloads.HubTokenizer object at 0x7dc397b73770>
+
+    @pytest.mark.prefix_reuse
+    async def test_shared_prompt_start_cuts_time_to_first_token(
+        request, harness_settings, harness_report, engine_session, engine_tokenizer
+    ) -> None:
+        shared_spec = get_workload_spec(harness_settings.workload_scale, WORKLOAD_SHARED_PREFIX)
+        unshared_spec = replace(shared_spec, shared_prefix_tokens=0)
+        shared = build_requests(shared_spec, engine_tokenizer, harness_settings.seed)
+        unshared = build_requests(unshared_spec, engine_tokenizer, harness_settings.seed + 1)
+        model_id = harness_settings.model_id
+    
+        await run_concurrency_level(engine_session, shared[:1], 1, model_id, WORKLOAD_SHARED_PREFIX)
+        with_reuse = await run_concurrency_level(
+            engine_session, shared[1:], 1, model_id, WORKLOAD_SHARED_PREFIX
+        )
+        without_reuse = await run_concurrency_level(
+            engine_session, unshared[1:], 1, model_id, WORKLOAD_SHARED_PREFIX
+        )
+        reduction = 1 - with_reuse.ttft.p50_ms / max(without_reuse.ttft.p50_ms, 1e-9)
+    
+        harness_report.record(
+            request.node.nodeid,
+            SuiteResult(
+                SUITE_PREFIX_REUSE,
+                WORKLOAD_SHARED_PREFIX,
+                f"TTFT p50 {without_reuse.ttft.p50_ms:.0f} -> {with_reuse.ttft.p50_ms:.0f} ms "
+                f"({reduction:.0%} lower)",
+                f">= {harness_settings.prefix_min_ttft_reduction:.0%} lower",
+                f"{shared_spec.shared_prefix_tokens} shared of {shared_spec.prompt_tokens} tokens",
+            ),
+        )
+>       assert with_reuse.error_count == without_reuse.error_count == 0
+E       AssertionError: assert 63 == 0
+E        +  where 63 = WorkloadMetrics(workload='shared_prefix', concurrency=1, request_count=63, error_count=63, total_completion_tokens=0, ...=0.0, p95_ms=0.0, p99_ms=0.0, mean_ms=0.0), end_to_end=LatencySummary(p50_ms=0.0, p95_ms=0.0, p99_ms=0.0, mean_ms=0.0)).error_count
+
+tests/suites/test_prefix_and_interference.py:55: AssertionError
+________________ test_long_prompts_do_not_freeze_other_streams _________________
+
+request = <FixtureRequest for <Function test_long_prompts_do_not_freeze_other_streams>>
+harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])
+harness_report = <engineharness.report_writer.HarnessReport object at 0x7dc397b71400>
+engine_session = <aiohttp.client.ClientSession object at 0x7dc386a042d0>
+engine_tokenizer = <engineharness.workloads.HubTokenizer object at 0x7dc397b73770>
+
+    @pytest.mark.long_prompt_interference
+    async def test_long_prompts_do_not_freeze_other_streams(
+        request, harness_settings, harness_report, engine_session, engine_tokenizer
+    ) -> None:
+        scale = harness_settings.workload_scale
+        chats = build_requests(
+            get_workload_spec(scale, WORKLOAD_SHORT_CHAT), engine_tokenizer, harness_settings.seed
+        )[: INTERFERENCE_USERS * 2]
+        long_prompts = build_requests(
+            get_workload_spec(scale, WORKLOAD_LONG_PROMPT), engine_tokenizer, harness_settings.seed
+        )
+        model_id = harness_settings.model_id
+    
+        alone = await run_concurrency_level(
+            engine_session, chats, INTERFERENCE_USERS, model_id, WORKLOAD_SHORT_CHAT
+        )
+        disturbed, _ = await asyncio.gather(
+            run_concurrency_level(
+                engine_session, chats, INTERFERENCE_USERS, model_id, WORKLOAD_SHORT_CHAT
+            ),
+            run_concurrency_level(engine_session, long_prompts, 1, model_id, WORKLOAD_LONG_PROMPT),
+        )
+        ratio = disturbed.inter_token.p99_ms / max(alone.inter_token.p99_ms, 1e-9)
+    
+        harness_report.record(
+            request.node.nodeid,
+            SuiteResult(
+                SUITE_LONG_PROMPT_INTERFERENCE,
+                WORKLOAD_SHORT_CHAT,
+                f"ITL p99 {alone.inter_token.p99_ms:.0f} -> {disturbed.inter_token.p99_ms:.0f} ms "
+                f"({ratio:.1f}x)",
+                f"<= {harness_settings.interference_max_itl_ratio:.1f}x",
+                f"{len(long_prompts)} long prompts arriving",
+            ),
+        )
+>       assert alone.error_count == disturbed.error_count == 0
+E       AssertionError: assert 4 == 0
+E        +  where 4 = WorkloadMetrics(workload='short_chat', concurrency=2, request_count=4, error_count=4, total_completion_tokens=0, wall_...=0.0, p95_ms=0.0, p99_ms=0.0, mean_ms=0.0), end_to_end=LatencySummary(p50_ms=0.0, p95_ms=0.0, p99_ms=0.0, mean_ms=0.0)).error_count
+
+tests/suites/test_prefix_and_interference.py:94: AssertionError
+___________ test_tokens_stream_one_chunk_at_a_time_and_end_with_done ___________
+
+request = <FixtureRequest for <Function test_tokens_stream_one_chunk_at_a_time_and_end_with_done>>
+harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])
+harness_report = <engineharness.report_writer.HarnessReport object at 0x7dc397b71400>
+engine_session = <aiohttp.client.ClientSession object at 0x7dc386a06ad0>
+engine_tokenizer = <engineharness.workloads.HubTokenizer object at 0x7dc397b73770>
+
+    @pytest.mark.streaming
+    async def test_tokens_stream_one_chunk_at_a_time_and_end_with_done(
+        request, harness_settings, harness_report, engine_session, engine_tokenizer
+    ) -> None:
+        spec = get_workload_spec(harness_settings.workload_scale, WORKLOAD_SHORT_CHAT)
+        completion_request = build_requests(spec, engine_tokenizer, harness_settings.seed)[0]
+    
+        timing = await stream_completion(engine_session, completion_request, harness_settings.model_id)
+    
+        harness_report.record(
+            request.node.nodeid,
+            SuiteResult(
+                SUITE_STREAMING,
+                WORKLOAD_SHORT_CHAT,
+                f"{len(timing.chunk_arrival_times)} chunks, {timing.completion_tokens} tokens",
+                f"{completion_request.max_tokens} tokens, [DONE]",
+                timing.error or "ok",
+            ),
+        )
+>       assert timing.error is None
+E       assert "ClientPayloadError: Response payload is not completed: <TransferEncodingError: 400, message='Not enough data to satisfy transfer length header.'>" is None
+E        +  where "ClientPayloadError: Response payload is not completed: <TransferEncodingError: 400, message='Not enough data to satisfy transfer length header.'>" = RequestTiming(request_id='short_chat-0', sent_at=224.680347121, finished_at=224.687306623, chunk_arrival_times=[], chu... payload is not completed: <TransferEncodingError: 400, message='Not enough data to satisfy transfer length header.'>").error
+
+tests/suites/test_streaming_and_latency.py:35: AssertionError
+_____________ test_single_user_latency_is_measured_without_errors ______________
+
+request = <FixtureRequest for <Function test_single_user_latency_is_measured_without_errors>>
+harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])
+harness_report = <engineharness.report_writer.HarnessReport object at 0x7dc397b71400>
+engine_session = <aiohttp.client.ClientSession object at 0x7dc386a05090>
+engine_tokenizer = <engineharness.workloads.HubTokenizer object at 0x7dc397b73770>
+
+    @pytest.mark.latency
+    async def test_single_user_latency_is_measured_without_errors(
+        request, harness_settings, harness_report, engine_session, engine_tokenizer
+    ) -> None:
+        spec = get_workload_spec(harness_settings.workload_scale, WORKLOAD_SHORT_CHAT)
+        requests = build_requests(spec, engine_tokenizer, harness_settings.seed)[
+            :LATENCY_SAMPLE_REQUESTS
+        ]
+    
+        metrics = await run_concurrency_level(
+            engine_session, requests, 1, harness_settings.model_id, WORKLOAD_SHORT_CHAT
+        )
+        write_sweep_results(
+            harness_settings.results_dir / "latency", [metrics], harness_settings.target_url
+        )
+    
+        harness_report.record(
+            request.node.nodeid,
+            SuiteResult(
+                SUITE_LATENCY,
+                WORKLOAD_SHORT_CHAT,
+                f"TTFT p50 {metrics.ttft.p50_ms:.0f} ms, ITL p50 {metrics.inter_token.p50_ms:.1f} ms, "
+                f"{metrics.per_user_tokens_per_second:.1f} tok/s",
+                "no errors",
+                f"{metrics.request_count} requests at 1 user",
+            ),
+        )
+>       assert metrics.error_count == 0
+E       AssertionError: assert 4 == 0
+E        +  where 4 = WorkloadMetrics(workload='short_chat', concurrency=1, request_count=4, error_count=4, total_completion_tokens=0, wall_...=0.0, p95_ms=0.0, p99_ms=0.0, mean_ms=0.0), end_to_end=LatencySummary(p50_ms=0.0, p95_ms=0.0, p99_ms=0.0, mean_ms=0.0)).error_count
+
+tests/suites/test_streaming_and_latency.py:68: AssertionError
+=============================== warnings summary ===============================
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/suites/test_equivalence.py:13: suite does not apply to this phase
+================== 6 failed, 1 skipped, 14 warnings in 6.30s ===================

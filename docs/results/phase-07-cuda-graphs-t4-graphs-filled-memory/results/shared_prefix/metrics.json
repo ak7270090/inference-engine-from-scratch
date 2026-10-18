@@ -1,0 +1,114 @@
+[
+  {
+    "workload": "shared_prefix",
+    "concurrency": 1,
+    "request_count": 64,
+    "error_count": 64,
+    "total_completion_tokens": 0,
+    "wall_seconds": 0.49867350399998145,
+    "total_tokens_per_second": 0.0,
+    "per_user_tokens_per_second": 0.0,
+    "ttft": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "inter_token": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "end_to_end": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    }
+  },
+  {
+    "workload": "shared_prefix",
+    "concurrency": 4,
+    "request_count": 64,
+    "error_count": 64,
+    "total_completion_tokens": 0,
+    "wall_seconds": 0.42896691500001793,
+    "total_tokens_per_second": 0.0,
+    "per_user_tokens_per_second": 0.0,
+    "ttft": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "inter_token": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "end_to_end": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    }
+  },
+  {
+    "workload": "shared_prefix",
+    "concurrency": 16,
+    "request_count": 64,
+    "error_count": 64,
+    "total_completion_tokens": 0,
+    "wall_seconds": 0.4560297409999805,
+    "total_tokens_per_second": 0.0,
+    "per_user_tokens_per_second": 0.0,
+    "ttft": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "inter_token": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "end_to_end": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    }
+  },
+  {
+    "workload": "shared_prefix",
+    "concurrency": 64,
+    "request_count": 64,
+    "error_count": 64,
+    "total_completion_tokens": 0,
+    "wall_seconds": 0.4444490950000102,
+    "total_tokens_per_second": 0.0,
+    "per_user_tokens_per_second": 0.0,
+    "ttft": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "inter_token": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "end_to_end": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    }
+  }
+]

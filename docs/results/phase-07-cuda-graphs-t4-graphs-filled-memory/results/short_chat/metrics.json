@@ -1,0 +1,114 @@
+[
+  {
+    "workload": "short_chat",
+    "concurrency": 1,
+    "request_count": 64,
+    "error_count": 64,
+    "total_completion_tokens": 0,
+    "wall_seconds": 0.4564799940000057,
+    "total_tokens_per_second": 0.0,
+    "per_user_tokens_per_second": 0.0,
+    "ttft": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "inter_token": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "end_to_end": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    }
+  },
+  {
+    "workload": "short_chat",
+    "concurrency": 4,
+    "request_count": 64,
+    "error_count": 64,
+    "total_completion_tokens": 0,
+    "wall_seconds": 0.40680049599998824,
+    "total_tokens_per_second": 0.0,
+    "per_user_tokens_per_second": 0.0,
+    "ttft": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "inter_token": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "end_to_end": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    }
+  },
+  {
+    "workload": "short_chat",
+    "concurrency": 16,
+    "request_count": 64,
+    "error_count": 64,
+    "total_completion_tokens": 0,
+    "wall_seconds": 0.5050553920000027,
+    "total_tokens_per_second": 0.0,
+    "per_user_tokens_per_second": 0.0,
+    "ttft": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "inter_token": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "end_to_end": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    }
+  },
+  {
+    "workload": "short_chat",
+    "concurrency": 64,
+    "request_count": 64,
+    "error_count": 64,
+    "total_completion_tokens": 0,
+    "wall_seconds": 0.5627261079999926,
+    "total_tokens_per_second": 0.0,
+    "per_user_tokens_per_second": 0.0,
+    "ttft": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "inter_token": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    },
+    "end_to_end": {
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "mean_ms": 0.0
+    }
+  }
+]

@@ -55,6 +55,8 @@ class EngineSettings(BaseSettings):
     quantization: Literal["none", "int8"] = "none"
     kv_cache_dtype: Literal["auto", "int8"] = "auto"
     cuda_graphs: bool = False
+    # longer contexts decode eagerly: a graph's memory grows with batch x context
+    cuda_graph_max_context: int = Field(default=1024, ge=1)
 
     # speculative decoding (phase 6), serial scheduler only
     speculative: Literal["none", "ngram", "draft"] = "none"
