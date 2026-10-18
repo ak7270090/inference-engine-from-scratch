@@ -24,7 +24,22 @@ def apply_top_p(probabilities: torch.Tensor, top_p: float) -> torch.Tensor:
     probability_before = torch.cumsum(sorted_probabilities, dim=-1) - sorted_probabilities
     sorted_probabilities[probability_before >= top_p] = 0.0
     kept = torch.zeros_like(probabilities).scatter(-1, sorted_token_ids, sorted_probabilities)
-    return kept / kept.sum()
+    return kept / kept.sum(dim=-1, keepdim=True)
+
+
+def compute_token_probabilities(logits: torch.Tensor, params: SamplingParams) -> torch.Tensor:
+    """The distribution a token is drawn from (``[..., vocab]``); greedy is one-hot on argmax."""
+    if params.temperature == GREEDY_TEMPERATURE:
+        greedy_tokens = torch.argmax(logits, dim=-1)
+        return torch.nn.functional.one_hot(greedy_tokens, logits.shape[-1]).float()
+    probabilities = torch.softmax(logits.float() / params.temperature, dim=-1)
+    if params.top_p < 1.0:
+        probabilities = apply_top_p(probabilities, params.top_p)
+    return probabilities
+
+
+def sample_from_probabilities(probabilities: torch.Tensor, generator: torch.Generator) -> int:
+    return int(torch.multinomial(probabilities, 1, generator=generator).item())
 
 
 def sample_next_token(
@@ -33,10 +48,7 @@ def sample_next_token(
     """``logits`` is ``[vocab_size]`` for the last position."""
     if params.temperature == GREEDY_TEMPERATURE:
         return int(torch.argmax(logits).item())
-    probabilities = torch.softmax(logits.float() / params.temperature, dim=-1)
-    if params.top_p < 1.0:
-        probabilities = apply_top_p(probabilities, params.top_p)
-    return int(torch.multinomial(probabilities, 1, generator=generator).item())
+    return sample_from_probabilities(compute_token_probabilities(logits, params), generator)
 
 
 def find_finish_reason(

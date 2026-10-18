@@ -18,7 +18,7 @@ REPO_URL = "https://github.com/ak7270090/inference-engine-from-scratch.git"
 MODEL_ID = "Qwen/Qwen3-0.6B"
 REPO_DIR = "/tmp/repo"
 WORK_DIR = "/kaggle/working"
-HARNESS_WORKLOADS = ["short_chat", "long_prompt", "shared_prefix", "mixed_lengths"]""",
+""",
     """import os
 import shutil
 import subprocess
@@ -81,18 +81,25 @@ if run_and_print(wait_command, cwd=harness_dir, env=harness_env) == 0:
         cwd=harness_dir,
         env=harness_env,
     )
-    for workload in HARNESS_WORKLOADS:
-        run_and_print(
-            [sys.executable, "-m", "engineharness", "sweep", workload],
-            cwd=harness_dir,
-            env=harness_env,
-        )
+    run_and_print(
+        [sys.executable, "-m", "engineharness", "sweep-all"], cwd=harness_dir, env=harness_env
+    )
     # peak concurrency, preemptions and KV usage, as the engine itself counted them
     with urllib.request.urlopen("http://localhost:8000/metrics", timeout=30) as response:
         Path(f"{WORK_DIR}/results/engine-metrics.txt").write_bytes(response.read())
 if TARGET != "vllm":
     run_and_print(
         [sys.executable, "-m", "nanoengine.step_timing", "--output-dir", f"{WORK_DIR}/results"]
+    )
+if TARGET.startswith("phase-06"):
+    run_and_print(
+        [
+            sys.executable,
+            "-m",
+            "nanoengine.speculative_benchmark",
+            "--output-dir",
+            f"{WORK_DIR}/results",
+        ]
     )
 if "int8" in TARGET:
     run_and_print(

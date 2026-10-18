@@ -35,8 +35,8 @@ def build_tiny_config(tie_word_embeddings: bool = True) -> Qwen3Config:
     )
 
 
-def build_tiny_model(tie_word_embeddings: bool = True) -> Qwen3ForCausalLM:
-    torch.manual_seed(MODEL_SEED)
+def build_tiny_model(tie_word_embeddings: bool = True, seed: int = MODEL_SEED) -> Qwen3ForCausalLM:
+    torch.manual_seed(seed)
     model = Qwen3ForCausalLM(build_tiny_config(tie_word_embeddings))
     for parameter in model.parameters():
         torch.nn.init.normal_(parameter, std=0.5)

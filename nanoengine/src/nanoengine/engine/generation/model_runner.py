@@ -49,6 +49,18 @@ class ModelRunner:
             self.allocator.on_tokens_cached(sequence)
         return token_ids
 
+    @torch.inference_mode()
+    def score_tokens(self, sequence: Sequence, token_count: int) -> torch.Tensor:
+        """Cache the next ``token_count`` tokens of one sequence and return the logits after each
+        of them, ``[token_count, vocab]`` (speculative decoding checks every guess at once)."""
+        inputs = build_step_inputs(
+            [sequence], self.allocator, self._pool, self._device, [token_count]
+        )
+        hidden_states = self._model(inputs.token_ids, inputs.context)
+        sequence.num_cached_tokens += token_count
+        self.allocator.on_tokens_cached(sequence)
+        return self._model.compute_logits(hidden_states[0, :token_count])
+
     def _run_eager(self, sequences: list[Sequence], token_counts: list[int] | None) -> torch.Tensor:
         inputs = build_step_inputs(
             sequences, self.allocator, self._pool, self._device, token_counts

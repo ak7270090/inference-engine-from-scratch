@@ -56,6 +56,7 @@ def main(arguments: list[str] | None = None) -> int:
     commands.add_parser("wait", help="wait until the engine answers /v1/models")
     sweep_parser = commands.add_parser("sweep", help="run a workload at every concurrency level")
     sweep_parser.add_argument("workload", help="short_chat, long_prompt, shared_prefix, ...")
+    commands.add_parser("sweep-all", help="sweep every workload in HARNESS_SWEEP_WORKLOADS")
     commands.add_parser("reference", help="save greedy outputs as the equivalence reference")
     parsed = parser.parse_args(arguments)
 
@@ -64,6 +65,11 @@ def main(arguments: list[str] | None = None) -> int:
         return asyncio.run(wait_for_engine(settings))
     if parsed.command == "sweep":
         return asyncio.run(sweep_workload(settings, parsed.workload))
+    if parsed.command == "sweep-all":
+        exit_codes = [
+            asyncio.run(sweep_workload(settings, workload)) for workload in settings.sweep_workloads
+        ]
+        return max(exit_codes, default=0)
     return asyncio.run(write_reference(settings))
 
 

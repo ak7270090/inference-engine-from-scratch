@@ -10,6 +10,8 @@ from nanoengine.constants import (
     KV_CACHE_NONE,
     QUANTIZATION_INT8,
     SCHEDULER_STATIC,
+    SPECULATIVE_NGRAM,
+    SPECULATIVE_NONE,
     TORCH_DTYPES,
 )
 from nanoengine.engine.generation.cached_generator import CachedGenerator
@@ -30,6 +32,8 @@ from nanoengine.engine.scheduling.batch_scheduler import (
     StaticBatchScheduler,
 )
 from nanoengine.engine.scheduling.serial_engine_loop import SerialEngineLoop
+from nanoengine.engine.speculative.proposers import DraftModelProposer, NgramProposer
+from nanoengine.engine.speculative.speculative_generator import SpeculativeGenerator
 from nanoengine.models.int8_quantization import quantize_linear_layers
 from nanoengine.models.qwen3 import Qwen3ForCausalLM
 from nanoengine.models.text_tokenizer import TextTokenizer, load_text_tokenizer
@@ -108,11 +112,29 @@ def create_batch_scheduler(
     return ContinuousBatchScheduler(allocator, settings.max_num_seqs, settings.max_prefill_tokens)
 
 
+def create_proposer(
+    settings: EngineSettings, draft_model: Qwen3ForCausalLM | None
+) -> NgramProposer | DraftModelProposer:
+    """Prompt-lookup guesses, or a small draft model with its own one-sequence KV cache."""
+    device = torch.device(settings.device)
+    if settings.speculative == SPECULATIVE_NGRAM:
+        return NgramProposer(settings.ngram_max_size)
+    if draft_model is None:
+        draft_dir = download_model_files(settings.draft_model_id, settings.model_cache_dir)
+        draft_model = load_qwen3_model(draft_dir, device, TORCH_DTYPES[settings.dtype])
+    draft_allocator = ContiguousSlotAllocator(1, settings.max_model_len, device)
+    draft_pool = KVCachePool(
+        draft_model.config, settings.max_model_len, device, TORCH_DTYPES[settings.dtype]
+    )
+    return DraftModelProposer(ModelRunner(draft_model, draft_pool, draft_allocator, device), device)
+
+
 def create_engine(
     model: Qwen3ForCausalLM,
     stop_token_ids: frozenset[int],
     settings: EngineSettings,
     metrics: EngineMetrics,
+    draft_model: Qwen3ForCausalLM | None = None,
 ) -> InferenceEngine:
     device = torch.device(settings.device)
     if settings.quantization == QUANTIZATION_INT8:
@@ -132,6 +154,16 @@ def create_engine(
         if device.type == "cuda":
             decode_graphs.capture_all_buckets()
     runner = ModelRunner(model, pool, allocator, device, decode_graphs)
+    if settings.speculative != SPECULATIVE_NONE:
+        generator = SpeculativeGenerator(
+            runner,
+            create_proposer(settings, draft_model),
+            settings.num_speculative_tokens,
+            stop_token_ids,
+            device,
+            metrics,
+        )
+        return SerialEngineLoop(generator, metrics, settings.max_waiting_requests)
     if not settings.is_batched:
         generator = CachedGenerator(runner, stop_token_ids, device)
         return SerialEngineLoop(generator, metrics, settings.max_waiting_requests)

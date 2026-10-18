@@ -16,6 +16,7 @@ from nanoengine.constants import (
     KV_CACHE_PAGED,
     SCHEDULER_CONTINUOUS,
     SCHEDULER_SERIAL,
+    SPECULATIVE_NONE,
 )
 
 
@@ -55,6 +56,12 @@ class EngineSettings(BaseSettings):
     kv_cache_dtype: Literal["auto", "int8"] = "auto"
     cuda_graphs: bool = False
 
+    # speculative decoding (phase 6), serial scheduler only
+    speculative: Literal["none", "ngram", "draft"] = "none"
+    num_speculative_tokens: int = Field(default=4, ge=1)
+    draft_model_id: str = DEFAULT_MODEL_ID
+    ngram_max_size: int = Field(default=3, ge=1)
+
     host: str = "0.0.0.0"
     port: int = 8000
     log_level: str = "info"
@@ -77,6 +84,13 @@ class EngineSettings(BaseSettings):
             raise ValueError("chunked_prefill needs scheduler=continuous")
         if self.kv_cache == KV_CACHE_NONE and (self.kv_cache_dtype == "int8" or self.cuda_graphs):
             raise ValueError("kv_cache_dtype=int8 and cuda_graphs need a KV cache")
+        uses_speculation = self.speculative != SPECULATIVE_NONE
+        if uses_speculation and (
+            self.is_batched or self.kv_cache == KV_CACHE_NONE or self.prefix_cache
+        ):
+            raise ValueError(
+                "speculative decoding needs scheduler=serial, a KV cache and no prefix cache"
+            )
         return self
 
     @property

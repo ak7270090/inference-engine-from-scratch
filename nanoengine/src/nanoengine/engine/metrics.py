@@ -63,6 +63,16 @@ class EngineMetrics:
             "Prompt tokens taken from the prefix cache instead of computed, since start",
             registry=self.registry,
         )
+        self.speculative_proposed_tokens = Counter(
+            "nanoengine_speculative_proposed_tokens",
+            "Tokens guessed by the speculative proposer",
+            registry=self.registry,
+        )
+        self.speculative_accepted_tokens = Counter(
+            "nanoengine_speculative_accepted_tokens",
+            "Guessed tokens the target model kept; accepted / proposed is the acceptance rate",
+            registry=self.registry,
+        )
 
     def set_running_requests(self, count: int) -> None:
         self.running_requests.set(count)

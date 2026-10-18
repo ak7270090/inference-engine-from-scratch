@@ -144,3 +144,20 @@ async def test_wait_until_ready_gives_up_on_a_dead_url() -> None:
 
     async with aiohttp.ClientSession(base_url="http://127.0.0.1:9") as session:
         assert await wait_until_ready(session, timeout_seconds=0.1) is False
+
+
+async def record_sweep(settings, workload_name: str) -> int:
+    SWEPT_WORKLOADS.append(workload_name)
+    return 0
+
+
+SWEPT_WORKLOADS: list[str] = []
+
+
+def test_sweep_all_runs_every_configured_workload(monkeypatch) -> None:
+    monkeypatch.setenv("HARNESS_SWEEP_WORKLOADS", '["short_chat", "burst"]')
+    monkeypatch.setattr("engineharness.__main__.sweep_workload", record_sweep)
+    SWEPT_WORKLOADS.clear()
+
+    assert main(["sweep-all"]) == 0
+    assert SWEPT_WORKLOADS == ["short_chat", "burst"]

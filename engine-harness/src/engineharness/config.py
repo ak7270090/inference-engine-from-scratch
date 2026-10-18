@@ -5,7 +5,15 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from engineharness.constants import ENV_FILE_VARIABLE, ENV_PREFIX, SCALE_CPU
+from engineharness.constants import (
+    ENV_FILE_VARIABLE,
+    ENV_PREFIX,
+    SCALE_CPU,
+    WORKLOAD_LONG_PROMPT,
+    WORKLOAD_MIXED_LENGTHS,
+    WORKLOAD_SHARED_PREFIX,
+    WORKLOAD_SHORT_CHAT,
+)
 
 
 class HarnessSettings(BaseSettings):
@@ -39,6 +47,12 @@ class HarnessSettings(BaseSettings):
     capacity_max_error_rate: float = 0.0
 
     results_dir: Path = Path("results")
+    sweep_workloads: list[str] = [
+        WORKLOAD_SHORT_CHAT,
+        WORKLOAD_LONG_PROMPT,
+        WORKLOAD_SHARED_PREFIX,
+        WORKLOAD_MIXED_LENGTHS,
+    ]
 
 
 def load_harness_settings() -> HarnessSettings:
