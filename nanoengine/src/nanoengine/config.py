@@ -11,6 +11,7 @@ from nanoengine.constants import (
     DEFAULT_MODEL_ID,
     ENV_FILE_VARIABLE,
     ENV_PREFIX,
+    KV_CACHE_DTYPE_INT8,
     KV_CACHE_NONE,
     KV_CACHE_PAGED,
     SCHEDULER_CONTINUOUS,
@@ -49,6 +50,11 @@ class EngineSettings(BaseSettings):
     chunked_prefill: bool = False
     max_num_batched_tokens: int = Field(default=512, ge=1)
 
+    # quantization and CUDA graphs (phase 7)
+    quantization: Literal["none", "int8"] = "none"
+    kv_cache_dtype: Literal["auto", "int8"] = "auto"
+    cuda_graphs: bool = False
+
     host: str = "0.0.0.0"
     port: int = 8000
     log_level: str = "info"
@@ -69,7 +75,13 @@ class EngineSettings(BaseSettings):
             raise ValueError("prefix_cache needs kv_cache=paged (it shares blocks)")
         if self.chunked_prefill and self.scheduler != SCHEDULER_CONTINUOUS:
             raise ValueError("chunked_prefill needs scheduler=continuous")
+        if self.kv_cache == KV_CACHE_NONE and (self.kv_cache_dtype == "int8" or self.cuda_graphs):
+            raise ValueError("kv_cache_dtype=int8 and cuda_graphs need a KV cache")
         return self
+
+    @property
+    def is_int8_kv_cache(self) -> bool:
+        return self.kv_cache_dtype == KV_CACHE_DTYPE_INT8
 
 
 def load_engine_settings() -> EngineSettings:

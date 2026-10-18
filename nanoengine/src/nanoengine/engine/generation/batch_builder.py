@@ -59,5 +59,7 @@ def build_step_inputs(
         attention_mask=build_attention_mask(positions, context_lengths, context_length),
         key_caches=pool.key_caches,
         value_caches=pool.value_caches,
+        key_scales=pool.key_scales,
+        value_scales=pool.value_scales,
     )
     return StepInputs(token_ids=token_ids, context=context, last_token_indices=counts - 1)

@@ -8,10 +8,12 @@ from nanoengine.config import EngineSettings
 from nanoengine.constants import (
     KV_CACHE_CONTIGUOUS,
     KV_CACHE_NONE,
+    QUANTIZATION_INT8,
     SCHEDULER_STATIC,
     TORCH_DTYPES,
 )
 from nanoengine.engine.generation.cached_generator import CachedGenerator
+from nanoengine.engine.generation.cuda_graph_runner import DecodeGraphRunner
 from nanoengine.engine.generation.model_runner import ModelRunner
 from nanoengine.engine.generation.naive_generator import NaiveGenerator
 from nanoengine.engine.interface import InferenceEngine
@@ -28,6 +30,7 @@ from nanoengine.engine.scheduling.batch_scheduler import (
     StaticBatchScheduler,
 )
 from nanoengine.engine.scheduling.serial_engine_loop import SerialEngineLoop
+from nanoengine.models.int8_quantization import quantize_linear_layers
 from nanoengine.models.qwen3 import Qwen3ForCausalLM
 from nanoengine.models.text_tokenizer import TextTokenizer, load_text_tokenizer
 from nanoengine.models.weight_loader import download_model_files, load_qwen3_model
@@ -56,7 +59,10 @@ def create_slot_allocator(
     if settings.kv_cache == KV_CACHE_CONTIGUOUS:
         if settings.is_batched:
             budget_slots = count_slots_for_budget(
-                model.config, TORCH_DTYPES[settings.dtype], settings.kv_cache_memory_mb
+                model.config,
+                TORCH_DTYPES[settings.dtype],
+                settings.kv_cache_memory_mb,
+                settings.is_int8_kv_cache,
             )
             num_regions = min(settings.max_num_seqs, budget_slots // settings.max_model_len)
         else:
@@ -69,7 +75,10 @@ def create_slot_allocator(
         allocator = ContiguousSlotAllocator(num_regions, settings.max_model_len, device)
         return allocator, num_regions * settings.max_model_len
     budget_slots = count_slots_for_budget(
-        model.config, TORCH_DTYPES[settings.dtype], settings.kv_cache_memory_mb
+        model.config,
+        TORCH_DTYPES[settings.dtype],
+        settings.kv_cache_memory_mb,
+        settings.is_int8_kv_cache,
     )
     num_blocks = budget_slots // settings.kv_block_size
     if num_blocks * settings.kv_block_size < settings.max_model_len:
@@ -106,12 +115,23 @@ def create_engine(
     metrics: EngineMetrics,
 ) -> InferenceEngine:
     device = torch.device(settings.device)
+    if settings.quantization == QUANTIZATION_INT8:
+        quantize_linear_layers(model)
     if settings.kv_cache == KV_CACHE_NONE:
         generator = NaiveGenerator(model, stop_token_ids, device)
         return SerialEngineLoop(generator, metrics, settings.max_waiting_requests)
     allocator, num_slots = create_slot_allocator(model, settings)
-    pool = KVCachePool(model.config, num_slots, device, TORCH_DTYPES[settings.dtype])
-    runner = ModelRunner(model, pool, allocator, device)
+    pool = KVCachePool(
+        model.config, num_slots, device, TORCH_DTYPES[settings.dtype], settings.is_int8_kv_cache
+    )
+    decode_graphs = None
+    if settings.cuda_graphs:
+        decode_graphs = DecodeGraphRunner(
+            model, pool, allocator, device, settings.max_num_seqs, settings.max_model_len
+        )
+        if device.type == "cuda":
+            decode_graphs.capture_all_buckets()
+    runner = ModelRunner(model, pool, allocator, device, decode_graphs)
     if not settings.is_batched:
         generator = CachedGenerator(runner, stop_token_ids, device)
         return SerialEngineLoop(generator, metrics, settings.max_waiting_requests)

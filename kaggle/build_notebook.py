@@ -93,6 +93,10 @@ if run_and_print(wait_command, cwd=harness_dir, env=harness_env) == 0:
 if TARGET != "vllm":
     run_and_print(
         [sys.executable, "-m", "nanoengine.step_timing", "--output-dir", f"{WORK_DIR}/results"]
+    )
+if "int8" in TARGET:
+    run_and_print(
+        [sys.executable, "-m", "nanoengine.quality_eval", "--output-dir", f"{WORK_DIR}/results"]
     )""",
     """server.terminate()
 server.wait(timeout=60)

@@ -15,7 +15,8 @@ from typing import Protocol
 import torch
 
 from nanoengine.config import load_engine_settings
-from nanoengine.constants import KV_CACHE_NONE, TORCH_DTYPES
+from nanoengine.constants import KV_CACHE_NONE, QUANTIZATION_INT8, TORCH_DTYPES
+from nanoengine.engine.generation.cuda_graph_runner import DecodeGraphRunner
 from nanoengine.engine.generation.model_runner import ModelRunner
 from nanoengine.engine.generation.naive_generator import NaiveGenerator
 from nanoengine.engine.interface import GenerationRequest, SamplingParams
@@ -23,6 +24,7 @@ from nanoengine.engine.memory.contiguous_allocator import ContiguousSlotAllocato
 from nanoengine.engine.memory.kv_cache_pool import KVCachePool
 from nanoengine.engine.sampling import create_sampling_generator
 from nanoengine.engine.sequence_state import Sequence
+from nanoengine.models.int8_quantization import quantize_linear_layers
 from nanoengine.models.qwen3 import Qwen3ForCausalLM
 from nanoengine.models.weight_loader import download_model_files, load_qwen3_model
 
@@ -31,6 +33,8 @@ DEFAULT_REPEATS = 5
 WARMUP_STEPS = 2
 STEP_TIMING_FILE_STEM = "step-time-vs-length"
 KV_CACHE_LABEL_SUFFIX = "-kv-cache"
+INT8_LABEL_SUFFIX = "-int8"
+CUDA_GRAPHS_LABEL_SUFFIX = "-cuda-graphs"
 
 
 @dataclass(frozen=True)
@@ -63,15 +67,23 @@ class NaiveStepBenchmark:
 class CachedDecodeStepBenchmark:
     """One decode step with ``len(token_ids) - 1`` tokens already in the KV cache."""
 
-    description = "KV cache"
-
     def __init__(
-        self, model: Qwen3ForCausalLM, device: torch.device, dtype: torch.dtype, max_length: int
+        self,
+        model: Qwen3ForCausalLM,
+        device: torch.device,
+        dtype: torch.dtype,
+        max_length: int,
+        is_int8_cache: bool = False,
+        uses_cuda_graphs: bool = False,
     ) -> None:
         self._allocator = ContiguousSlotAllocator(1, max_length, device)
-        pool = KVCachePool(model.config, max_length, device, dtype)
-        self._runner = ModelRunner(model, pool, self._allocator, device)
+        pool = KVCachePool(model.config, max_length, device, dtype, is_int8_cache)
+        decode_graphs = None
+        if uses_cuda_graphs:
+            decode_graphs = DecodeGraphRunner(model, pool, self._allocator, device, 1, max_length)
+        self._runner = ModelRunner(model, pool, self._allocator, device, decode_graphs)
         self._device = device
+        self.description = "KV cache" + (", CUDA graphs" if uses_cuda_graphs else "")
 
     def run_step(self, token_ids: list[int]) -> None:
         request = GenerationRequest("step-timing", token_ids, SamplingParams(max_new_tokens=1))
@@ -177,11 +189,23 @@ def main(arguments: list[str] | None = None) -> None:
     model_dir = download_model_files(settings.model_id, settings.model_cache_dir)
     model = load_qwen3_model(model_dir, device, dtype)
     device_label = f"{device.type}-{settings.dtype}"
+    if settings.quantization == QUANTIZATION_INT8:
+        quantize_linear_layers(model)
+        device_label += INT8_LABEL_SUFFIX
     if settings.kv_cache == KV_CACHE_NONE:
         benchmark: StepBenchmark = NaiveStepBenchmark(model, device)
     else:
-        benchmark = CachedDecodeStepBenchmark(model, device, dtype, max(parsed.lengths))
+        benchmark = CachedDecodeStepBenchmark(
+            model,
+            device,
+            dtype,
+            max(parsed.lengths),
+            settings.is_int8_kv_cache,
+            settings.cuda_graphs,
+        )
         device_label += KV_CACHE_LABEL_SUFFIX
+        if settings.cuda_graphs:
+            device_label += CUDA_GRAPHS_LABEL_SUFFIX
     timings = measure_step_timings(
         benchmark, parsed.lengths, parsed.repeats, device, model.config.vocab_size
     )

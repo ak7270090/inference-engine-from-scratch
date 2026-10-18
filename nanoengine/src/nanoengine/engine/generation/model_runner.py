@@ -3,6 +3,7 @@
 import torch
 
 from nanoengine.engine.generation.batch_builder import build_step_inputs
+from nanoengine.engine.generation.cuda_graph_runner import DecodeGraphRunner
 from nanoengine.engine.memory.kv_cache_pool import KVCachePool
 from nanoengine.engine.memory.slot_allocator import SlotAllocator
 from nanoengine.engine.sampling import GREEDY_TEMPERATURE, sample_next_token
@@ -17,11 +18,13 @@ class ModelRunner:
         pool: KVCachePool,
         allocator: SlotAllocator,
         device: torch.device,
+        decode_graphs: DecodeGraphRunner | None = None,
     ) -> None:
         self._model = model
         self._pool = pool
         self.allocator = allocator
         self._device = device
+        self.decode_graphs = decode_graphs
 
     @property
     def vocab_size(self) -> int:
@@ -35,18 +38,24 @@ class ModelRunner:
         sample from the last one. The sample only counts once a sequence is fully cached; after a
         partial prefill chunk the caller drops it. KV memory must already be reserved.
         """
-        inputs = build_step_inputs(
-            sequences, self.allocator, self._pool, self._device, token_counts
-        )
-        hidden_states = self._model(inputs.token_ids, inputs.context)
-        batch_rows = torch.arange(len(sequences), device=self._device)
-        logits = self._model.compute_logits(hidden_states[batch_rows, inputs.last_token_indices])
+        if token_counts is None and self.decode_graphs and self.decode_graphs.can_run(sequences):
+            logits = self.decode_graphs.run(sequences)
+        else:
+            logits = self._run_eager(sequences, token_counts)
         token_ids = self._sample(logits, sequences)
         counts = token_counts or [sequence.num_uncached_tokens for sequence in sequences]
         for sequence, count in zip(sequences, counts, strict=True):
             sequence.num_cached_tokens += count
             self.allocator.on_tokens_cached(sequence)
         return token_ids
+
+    def _run_eager(self, sequences: list[Sequence], token_counts: list[int] | None) -> torch.Tensor:
+        inputs = build_step_inputs(
+            sequences, self.allocator, self._pool, self._device, token_counts
+        )
+        hidden_states = self._model(inputs.token_ids, inputs.context)
+        batch_rows = torch.arange(len(sequences), device=self._device)
+        return self._model.compute_logits(hidden_states[batch_rows, inputs.last_token_indices])
 
     def _sample(self, logits: torch.Tensor, sequences: list[Sequence]) -> list[int]:
         """One argmax for the whole batch (one GPU sync); per-sequence sampling only when needed."""
