@@ -131,7 +131,12 @@ def wait_for_kernel(kernel_id: str) -> str:
     """Wait until this push's run finishes; ignore a finished status left by the previous run."""
     has_started = False
     for poll in range(10**6):
-        status = read_kernel_status(run_kaggle_with_retry("kernels", "status", kernel_id))
+        try:
+            status = read_kernel_status(run_kaggle_with_retry("kernels", "status", kernel_id))
+        except RuntimeError as error:  # the run continues on Kaggle while this machine is offline
+            print(f"status check failed, retrying: {str(error)[:200]}")
+            time.sleep(POLL_INTERVAL_SECONDS)
+            continue
         print(f"{kernel_id}: {status}")
         has_started = has_started or any(started in status for started in STARTED_STATUSES)
         is_finished = any(finished in status for finished in FINISHED_STATUSES)
@@ -146,6 +151,9 @@ def main() -> int:
     parser.add_argument("target", help="'vllm' or a nanoengine profile such as phase-01-naive")
     parser.add_argument("--owner", default=os.environ.get("KAGGLE_USERNAME"), required=False)
     parser.add_argument("--repo-ref", default="main", help="branch or tag the notebook clones")
+    parser.add_argument(
+        "--no-push", action="store_true", help="only wait for the current run and download it"
+    )
     parsed = parser.parse_args()
     load_env_file(ENV_FILE)
     owner = parsed.owner or os.environ.get("KAGGLE_USERNAME")
@@ -153,7 +161,8 @@ def main() -> int:
         parser.error("pass --owner or set KAGGLE_USERNAME")
 
     kernel_dir, kernel_id = build_kernel_dir(parsed.target, parsed.repo_ref, owner)
-    print(push_kernel(kernel_dir))
+    if not parsed.no_push:
+        print(push_kernel(kernel_dir))
     status = wait_for_kernel(kernel_id)
     results_dir = RESULTS_ROOT / f"{parsed.target}-t4"
     results_dir.mkdir(parents=True, exist_ok=True)
