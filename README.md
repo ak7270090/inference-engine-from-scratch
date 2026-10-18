@@ -27,12 +27,12 @@ Code at the end of each phase: `git checkout phase-NN`.
 |---|---|---|---|
 | 0 | Harness and vLLM baseline | | done |
 | 1 | [Naive generation](docs/phases/phase-01-naive.md) | `kv_cache=none`, `scheduler=serial` | done: 28 tok/s on T4 |
-| 2 | KV cache | `kv_cache=contiguous` | planned |
-| 3 | Continuous batching | `scheduler=continuous` | planned |
-| 4 | Paged KV cache | `kv_cache=paged` | planned |
-| 5 | Prefix caching and chunked prefill | `prefix_cache=on`, `chunked_prefill=on` | planned |
-| 6 | Speculative decoding | `speculative=ngram\|draft` | planned |
-| 7 | int8 weights and CUDA graphs | `quantization=int8`, `cuda_graphs=on` | planned |
+| 2 | [KV cache](docs/phases/phase-02-kv-cache.md) | `kv_cache=contiguous` | done: decode step flat at 33 ms; long prompts 2.8x faster |
+| 3 | [Static and continuous batching](docs/phases/phase-03-batching.md) | `scheduler=static\|continuous` | done: 394–419 tok/s at 64 users |
+| 4 | [Paged KV cache](docs/phases/phase-04-paged.md) | `kv_cache=paged` | done: 64 users in memory (vs 18), 1,028 tok/s |
+| 5 | Prefix caching and chunked prefill | `prefix_cache=true`, `chunked_prefill=true` | built; T4 run in progress |
+| 6 | [Speculative decoding](docs/phases/phase-06-speculative.md) | `speculative=ngram\|draft` | done: n-gram 1.8–3.1x for one user |
+| 7 | int8 weights, int8 KV cache, CUDA graphs | `quantization=int8`, `kv_cache_dtype=int8`, `cuda_graphs=true` | built; T4 run in progress |
 
 ## Target to chase: vLLM on a Kaggle T4
 
@@ -57,12 +57,20 @@ results: [docs/results/vllm-t4/](docs/results/vllm-t4/results/harness-report.md)
 
 ## Progress on the T4
 
-| Engine | short_chat tok/s, 1 user | short_chat tok/s, 4 users | ITL p50, 1 user |
+| Engine (Qwen3-0.6B fp16, one T4) | short_chat tok/s, 1 user | short_chat tok/s, 64 users | Sequences in memory |
 |---|---|---|---|
-| Phase 1: naive | 28.3 | 27.8 | 35.2 ms |
-| vLLM 0.31.0 | 142.6 | 478.2 | 6.9 ms |
+| Phase 1: naive | 28.3 | serial | 1 |
+| Phase 2: KV cache | 27.3 | serial | 1 |
+| Phase 3: continuous batching | 26.0 | 394 | 18 |
+| Phase 4: paged KV cache | 26.7 | **1,028** | **64** |
+| Phase 6: n-gram speculation (serial) | **50.0** | serial | 1 |
+| vLLM 0.31.0 | 142.6 | 1,928 | 64 |
 
-![Phase 1 against vLLM on the same T4](docs/images/phase1-vs-vllm-t4.png)
+![short_chat throughput as users grow, every phase and vLLM](docs/images/progress-throughput-short-chat.png)
+
+At 64 users the engine reaches 53% of vLLM's throughput. One user gets 19% of vLLM's speed, because
+each step carries about 33 ms of kernel-launch overhead that vLLM removes with CUDA graphs and
+fused kernels (phase 7).
 
 ## Every engine speaks the same API
 

@@ -10,14 +10,18 @@ phase can be re-run and compared on the same code.
 nanoengine/
 ├── src/nanoengine/
 │   ├── models/        qwen3.py, attention_context.py (cached attention over slot pools),
-│   │                  weight_loader.py, text_tokenizer.py
+│   │                  int8_quantization.py, weight_loader.py, text_tokenizer.py
 │   ├── engine/
-│   │   ├── generation/   naive_generator, cached_generator, model_runner, batch_builder
-│   │   ├── memory/       kv_cache_pool, contiguous_allocator, block_allocator, paged_allocator
+│   │   ├── generation/   naive_generator, cached_generator, model_runner, batch_builder,
+│   │   │                 cuda_graph_runner
+│   │   ├── memory/       kv_cache_pool, contiguous_allocator, block_allocator, paged_allocator,
+│   │   │                 prefix_cache
 │   │   ├── scheduling/   request_queue, serial_engine_loop, batch_engine_loop, batch_scheduler
+│   │   ├── speculative/  proposers (n-gram, draft model), verifier, speculative_generator
 │   │   └── interface, sampling, sequence_state, metrics, runtime (builds the engine per mode)
 │   ├── api/           routes.py, schemas.py, completion_responses.py
-│   ├── app.py, config.py, constants.py, step_timing.py, __main__.py
+│   ├── app.py, config.py, constants.py, __main__.py
+│   ├── step_timing.py, quality_eval.py, speculative_benchmark.py   (benchmark CLIs)
 ├── profiles/          engine modes per phase (phase-01-naive.env, ...)
 ├── harness/           harness expectations per phase and device (phase-01-naive-cpu.env, ...)
 └── tests/
@@ -31,10 +35,19 @@ nanoengine/
 | `SCHEDULER` | `serial` (one request at a time), `static` (fill a batch, run it to the end), `continuous` (join and leave every step) | 1, 3, 3 |
 | `KV_CACHE_MEMORY_MB`, `KV_BLOCK_SIZE` | KV pool budget (default 1024 MB) and block size (16) | 3, 4 |
 | `MAX_NUM_SEQS`, `MAX_PREFILL_TOKENS`, `BATCH_FILL_TIMEOUT_MS` | seats per step (64), prompt tokens per prefill step (4096), static fill wait (50 ms) | 3 |
+| `PREFIX_CACHE`, `CHUNKED_PREFILL`, `MAX_NUM_BATCHED_TOKENS` | share full KV blocks of identical prompt starts; split prompts into chunks within a per-step token budget (512) | 5 |
+| `SPECULATIVE`, `NUM_SPECULATIVE_TOKENS`, `DRAFT_MODEL_ID` | `none`, `ngram` (prompt lookup), `draft` (small model guesses); guesses per step (4) | 6 |
+| `QUANTIZATION`, `KV_CACHE_DTYPE`, `CUDA_GRAPHS` | int8 weights; int8 KV cache (about 2x tokens per budget); replay decode steps as CUDA graphs | 7 |
 
-A profile in `profiles/` fixes the modes for one phase. Batching needs a KV cache
-(`scheduler=static|continuous` with `kv_cache=none` is rejected). Every mode is checked to give the
-same greedy tokens as recomputing each request alone.
+A profile in `profiles/` fixes the modes for one phase. Invalid combinations are rejected at
+startup:
+- batching needs a KV cache
+- prefix caching needs `kv_cache=paged`
+- chunked prefill needs `scheduler=continuous`
+- speculative decoding needs `scheduler=serial` without the prefix cache
+
+Every full-precision mode is tested to give the same greedy tokens as recomputing each request
+alone. The int8 modes change some tokens by design; `quality_eval` measures by how much.
 
 How one step works with a KV cache: the KV cache is a flat pool of token slots per layer. A
 contiguous cache gives each sequence a fixed range of slots; a paged cache gives it blocks of slots
