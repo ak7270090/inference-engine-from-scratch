@@ -91,6 +91,25 @@ What each later phase removes:
 - Phase 3 (batching) lets users share each step, instead of queueing (13.8 s TTFT at 4 users).
 - Phase 7 (CUDA graphs) removes the 33 ms launch floor.
 
+## Testing
+
+The suite has 36 unit tests (35 passed, 1 skipped) on a tiny random-weight Qwen3, which runs on
+CPU in seconds. It covers the API, the engine loop, the model against `transformers`, sampling, the
+loader and the tokenizer. Lint is clean and coverage is 99%.
+
+![ruff and pytest: 35 passed, 1 skipped, coverage 98.94%](docs/terminal-unit-tests.png)
+
+The skipped test runs against real Qwen3-0.6B weights (downloaded once, about 1.2 GB). It checks
+that our logits match `transformers`:
+
+![Logits match transformers for random and real weights](docs/terminal-real-weights.png)
+
+The harness suites ran against the running engine, first on a laptop CPU and then on a Kaggle T4:
+
+![Harness suites on CPU: 4 passed, 1 skipped, 2 expected failures](docs/terminal-harness-cpu.png)
+
+![Harness suites on a T4: 3 passed, 2 skipped, 2 expected failures](docs/terminal-harness-t4.png)
+
 ## Run
 
 ```powershell

@@ -75,6 +75,15 @@ $env:HARNESS_ENV_FILE="../01-naive-generation/harness/cpu.env"
 .\.venv\Scripts\python.exe -m engineharness sweep short_chat
 ```
 
+The harness unit tests run against a stub engine with known delays, so they check the timing math
+exactly:
+
+![Harness unit tests against the stub engine](engine-harness/docs/terminal-unit-tests.png)
+
+Below are the same suites against vLLM on the T4. Long-prompt interference fails even for vLLM:
+
+![Harness suites against vLLM on a T4](docs/images/terminal-vllm-suites-t4.png)
+
 ## Running on a Kaggle T4
 
 Create a Kaggle API token and put it in `.env` as `KAGGLE_API_TOKEN` (the file is gitignored).
