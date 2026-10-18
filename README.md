@@ -19,7 +19,7 @@ folder. A shared harness measures every phase and compares it with vLLM on the s
 | Phase | Optimization | Status |
 |---|---|---|
 | 0 | Harness and vLLM baseline | done |
-| 1 | Naive generation | done on CPU, T4 run next |
+| 1 | Naive generation | done: 28 tok/s on T4 |
 | 2 | KV cache | planned |
 | 3 | Continuous batching | planned |
 | 4 | Paged KV cache | planned |
@@ -47,6 +47,15 @@ results: [docs/results/vllm-t4/](docs/results/vllm-t4/results/harness-report.md)
 - Prefix caching cuts TTFT from 86 to 23 ms when 512 of 544 prompt tokens are shared.
 - Long-prompt interference **fails even for vLLM**. While 1,024-token prompts arrive, other users'
   ITL p99 rises from 8 to 193 ms (24×). Phase 5 (chunked prefill with a token budget) targets this.
+
+## Progress on the T4
+
+| Engine | short_chat tok/s, 1 user | short_chat tok/s, 4 users | ITL p50, 1 user |
+|---|---|---|---|
+| Phase 1: naive | 28.3 | 27.8 | 35.2 ms |
+| vLLM 0.31.0 | 142.6 | 478.2 | 6.9 ms |
+
+![Phase 1 against vLLM on the same T4](docs/images/phase1-vs-vllm-t4.png)
 
 ## Every engine speaks the same API
 

@@ -59,8 +59,37 @@ longer in the queue (short_chat, `cpu` scale):
 Harness outcomes ([full report](results/cpu/harness-report.md)): 4 passed, 2 expected failures
 (concurrency, prefix reuse), 1 skipped. Equivalence: 10/10 greedy outputs identical to the reference.
 
-For scale: vLLM on a T4 serves this workload at 7 ms per token for one user, and 1,928 tok/s total at
-64 users (see the [root README](../README.md)).
+## Results on a Kaggle T4 (fp16)
+
+Same engine on a T4 with the `t4` workload scale. Full results:
+[docs/results/01-naive-generation-t4](../docs/results/01-naive-generation-t4/results/harness-report.md).
+Outcomes match the CPU run: 3 passed, 2 expected failures (equivalence and interference are
+skipped on T4).
+
+![Phase 1 against vLLM on the same T4](../docs/images/phase1-vs-vllm-t4.png)
+
+| short_chat (64 in / 128 out) | Phase 1 | vLLM | vLLM is |
+|---|---|---|---|
+| Total tok/s, 1 user | 28.3 | 142.6 | 5× faster |
+| Total tok/s, 4 users | 27.8 | 478.2 | 17× faster |
+| Inter-token latency p50, 1 user | 35.2 ms | 6.9 ms | 5× faster |
+| TTFT p50, 4 users | 13.8 s (queued) | 39 ms | 350× faster |
+
+**On the GPU, step time is flat until about 256 tokens.** The work is small, so the fixed cost of
+launching hundreds of small kernels per step from Python dominates (about 33 ms). Above 256 tokens
+the recomputed attention and matmuls take over, reaching 102 ms at 1,024 tokens.
+
+![Step time against sequence length on a T4](../docs/results/01-naive-generation-t4/results/step-time-vs-length-cuda-float16.png)
+
+| Sequence length | 16 | 64 | 128 | 256 | 512 | 1024 |
+|---|---|---|---|---|---|---|
+| Step time on T4 (ms, median) | 35.5 | 32.6 | 33.8 | 34.2 | 48.2 | 102.2 |
+| Step time on CPU (ms, median) | 873 | 1,584 | 2,452 | 4,533 | 9,718 | 15,284 |
+
+What each later phase removes:
+- Phase 2 (KV cache) removes the growth past 256 tokens.
+- Phase 3 (batching) lets users share each step, instead of queueing (13.8 s TTFT at 4 users).
+- Phase 7 (CUDA graphs) removes the 33 ms launch floor.
 
 ## Run
 
