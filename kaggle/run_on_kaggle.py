@@ -1,7 +1,7 @@
 """Run one engine and the harness on a free Kaggle T4, then download the results.
 
     python kaggle/run_on_kaggle.py vllm --owner <kaggle-user>
-    python kaggle/run_on_kaggle.py 01-naive-generation --owner <kaggle-user>
+    python kaggle/run_on_kaggle.py phase-01-naive --owner <kaggle-user>
 
 Needs the ``kaggle`` CLI and ``KAGGLE_API_TOKEN`` (read from the repo's ``.env`` if not set).
 The notebook clones the public repo, so push your commits first.
@@ -114,7 +114,7 @@ def wait_for_kernel(kernel_id: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("target", help="'vllm' or a phase folder such as 01-naive-generation")
+    parser.add_argument("target", help="'vllm' or a nanoengine profile such as phase-01-naive")
     parser.add_argument("--owner", default=os.environ.get("KAGGLE_USERNAME"), required=False)
     parser.add_argument("--repo-ref", default="main", help="branch or tag the notebook clones")
     parsed = parser.parse_args()

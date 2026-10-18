@@ -1,7 +1,10 @@
 # inference-engine-from-scratch
 
-An LLM inference engine for Qwen3-0.6B, built one optimization at a time. Each phase is its own
-folder. A shared harness measures every phase and compares it with vLLM on the same workloads.
+An LLM inference engine for Qwen3-0.6B, built one optimization at a time. There is one engine
+package, `nanoengine`. Each phase adds modules and a mode flag, and older modes stay as baselines.
+A shared harness measures every phase and compares it with vLLM on the same workloads. This follows
+the layout of [nano-vllm](https://github.com/GeeeekExplorer/nano-vllm) and
+[mini-sglang](https://github.com/sgl-project/mini-sglang).
 
 ![Plan overview](docs/images/plan-overview.png)
 
@@ -9,23 +12,27 @@ folder. A shared harness measures every phase and compares it with vLLM on the s
 
 | Folder | What it is |
 |---|---|
+| [`nanoengine/`](nanoengine/README.md) | The engine: `models/`, `engine/`, `api/`; `profiles/` set the modes for each phase |
 | `engine-harness/` | Workloads, streaming client, latency metrics, pytest suites, locust load test |
-| `kaggle/` | Notebook template and `run_on_kaggle.py`: run an engine and the harness on a free T4 |
-| `01-naive-generation/` | Plain PyTorch Qwen3, no KV cache, one request at a time |
-| `docs/results/` | Harness reports and sweep charts per engine |
+| `kaggle/` | Notebook builder and `run_on_kaggle.py`: run a profile (or vLLM) and the harness on a free T4 |
+| `scripts/` | Render terminal output and SSE streams as README screenshots |
+| `docs/phases/` | One write-up per phase: what changed, results, screenshots |
+| `docs/results/` | Harness reports and charts per phase and device |
 
 ## Phases
 
-| Phase | Optimization | Status |
-|---|---|---|
-| 0 | Harness and vLLM baseline | done |
-| 1 | Naive generation | done: 28 tok/s on T4 |
-| 2 | KV cache | planned |
-| 3 | Continuous batching | planned |
-| 4 | Paged KV cache | planned |
-| 5 | Prefix caching and chunked prefill | planned |
-| 6 | Speculative decoding | planned |
-| 7 | int8 weights and CUDA graphs | planned |
+Code at the end of each phase: `git checkout phase-NN`.
+
+| Phase | Optimization | Modes | Status |
+|---|---|---|---|
+| 0 | Harness and vLLM baseline | | done |
+| 1 | [Naive generation](docs/phases/phase-01-naive.md) | `kv_cache=none`, `scheduler=serial` | done: 28 tok/s on T4 |
+| 2 | KV cache | `kv_cache=contiguous` | planned |
+| 3 | Continuous batching | `scheduler=continuous` | planned |
+| 4 | Paged KV cache | `kv_cache=paged` | planned |
+| 5 | Prefix caching and chunked prefill | `prefix_cache=on`, `chunked_prefill=on` | planned |
+| 6 | Speculative decoding | `speculative=ngram\|draft` | planned |
+| 7 | int8 weights and CUDA graphs | `quantization=int8`, `cuda_graphs=on` | planned |
 
 ## Target to chase: vLLM on a Kaggle T4
 
@@ -70,7 +77,7 @@ cd engine-harness
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 .\.venv\Scripts\python.exe -m pytest                      # unit tests, 80% coverage
-$env:HARNESS_ENV_FILE="../01-naive-generation/harness/cpu.env"
+$env:HARNESS_ENV_FILE="../nanoengine/harness/phase-01-naive-cpu.env"
 .\.venv\Scripts\python.exe -m pytest tests/suites -rxXs   # suites against a running engine
 .\.venv\Scripts\python.exe -m engineharness sweep short_chat
 ```
@@ -78,7 +85,7 @@ $env:HARNESS_ENV_FILE="../01-naive-generation/harness/cpu.env"
 The harness unit tests run against a stub engine with known delays, so they check the timing math
 exactly:
 
-![Harness unit tests against the stub engine](engine-harness/docs/terminal-unit-tests.png)
+![Harness unit tests against the stub engine](docs/images/terminal-harness-unit-tests.png)
 
 Below are the same suites against vLLM on the T4. Long-prompt interference fails even for vLLM:
 
@@ -91,7 +98,7 @@ Then push your commits and run:
 
 ```powershell
 python kaggle/run_on_kaggle.py vllm --owner <kaggle-user>
-python kaggle/run_on_kaggle.py 01-naive-generation --owner <kaggle-user>
+python kaggle/run_on_kaggle.py phase-01-naive --owner <kaggle-user>
 ```
 
 The results are saved to `docs/results/<target>-t4/`.
