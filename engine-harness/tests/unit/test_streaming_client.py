@@ -7,7 +7,7 @@ from stub_engine import (
     build_stub_token,
 )
 
-from engineharness.streaming_client import RequestTiming, stream_completion
+from engineharness.streaming_client import RequestTiming, _read_sse_line, stream_completion
 from engineharness.workloads import CompletionRequest
 
 pytestmark = pytest.mark.anyio
@@ -55,6 +55,16 @@ async def test_stream_reports_connection_errors() -> None:
 
     assert timing.error is not None
     assert not timing.is_successful
+
+
+def test_a_token_with_empty_text_still_counts_as_a_chunk() -> None:
+    timing = RequestTiming("special", sent_at=0.0)
+
+    _read_sse_line('data: {"choices": [{"index": 0, "text": ""}]}', timing)
+    _read_sse_line('data: {"choices": [{"index": 0, "finish_reason": "length"}]}', timing)
+
+    assert len(timing.chunk_arrival_times) == 1
+    assert timing.is_successful
 
 
 def test_decode_speed_is_none_for_a_single_token() -> None:

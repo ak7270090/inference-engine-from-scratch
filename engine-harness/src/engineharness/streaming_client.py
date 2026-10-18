@@ -91,7 +91,8 @@ def _read_sse_line(line: str, timing: RequestTiming) -> bool:
         timing.completion_tokens = usage.get("completion_tokens", timing.completion_tokens)
     for choice in chunk.get("choices") or []:
         text = choice.get("text")
-        if text:
+        # a token can decode to "" (a special token, or half of a UTF-8 character): still a token
+        if text is not None:
             timing.chunk_arrival_times.append(time.perf_counter())
             timing.chunk_texts.append(text)
     return False
