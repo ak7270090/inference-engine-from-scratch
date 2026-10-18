@@ -57,6 +57,8 @@ class EngineSettings(BaseSettings):
     cuda_graphs: bool = False
     # longer contexts decode eagerly: a graph's memory grows with batch x context
     cuda_graph_max_context: int = Field(default=1024, ge=1)
+    # graphs pay off where launch overhead dominates: small batches; larger ones decode eagerly
+    cuda_graph_max_batch: int = Field(default=8, ge=1)
 
     # speculative decoding (phase 6), serial scheduler only
     speculative: Literal["none", "ngram", "draft"] = "none"

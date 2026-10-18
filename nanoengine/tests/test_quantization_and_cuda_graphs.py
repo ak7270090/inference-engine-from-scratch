@@ -250,3 +250,14 @@ def test_a_capture_that_would_eat_the_reserve_is_skipped(tiny_model, monkeypatch
 
     assert graphs.num_captured_graphs == 0
     assert sequences[0].num_generated_tokens == 3
+
+
+def test_on_a_gpu_only_captured_buckets_take_the_graph_path(tiny_model, monkeypatch) -> None:
+    runner = build_runner_with_graph_path(tiny_model, use_graph_path=True)
+    graphs = runner.decode_graphs
+    sequences = [Sequence.from_request(build_request("r", PROMPTS[0]), CPU)]
+    sequences[0].token_ids.append(1)
+    sequences[0].num_cached_tokens = sequences[0].num_tokens - 1
+    monkeypatch.setattr(graphs, "_uses_cuda_graphs", True)
+
+    assert not graphs.can_run(sequences)

@@ -153,7 +153,7 @@ def create_engine(
             pool,
             allocator,
             device,
-            settings.max_num_seqs,
+            min(settings.max_num_seqs, settings.cuda_graph_max_batch),
             min(settings.max_model_len, settings.cuda_graph_max_context),
         )
         if device.type == "cuda":

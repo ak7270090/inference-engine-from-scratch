@@ -101,19 +101,28 @@ class DecodeGraphRunner:
                     self._create_graph(batch_size, context_length)
 
     def can_run(self, sequences: list[Sequence]) -> bool:
-        """Decode steps only (one uncached token each) that fit the largest buckets."""
-        return (
+        """Decode steps (one uncached token each) that fit a bucket. On a GPU the bucket must
+        also have a captured graph: padding a step without one would only add work."""
+        fits = (
             len(sequences) <= self.batch_buckets[-1]
             and max(sequence.num_tokens for sequence in sequences) <= self.context_buckets[-1]
             and all(sequence.num_uncached_tokens == 1 for sequence in sequences)
         )
+        if not fits or not self._uses_cuda_graphs:
+            return fits
+        bucket = self._bucket_for(sequences)
+        return bucket in self._graphs and self._graphs[bucket].graph is not None
 
-    def run(self, sequences: list[Sequence]) -> torch.Tensor:
-        """Logits ``[len(sequences), vocab]`` for each sequence's next token."""
+    def _bucket_for(self, sequences: list[Sequence]) -> tuple[int, int]:
         batch_size = round_up_to_bucket(len(sequences), self.batch_buckets)
         context_length = round_up_to_bucket(
             max(sequence.num_tokens for sequence in sequences), self.context_buckets
         )
+        return batch_size, context_length
+
+    def run(self, sequences: list[Sequence]) -> torch.Tensor:
+        """Logits ``[len(sequences), vocab]`` for each sequence's next token."""
+        batch_size, context_length = self._bucket_for(sequences)
         decode_graph = self._graphs.get((batch_size, context_length))
         if decode_graph is None:
             decode_graph = self._create_graph(batch_size, context_length)

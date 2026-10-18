@@ -87,9 +87,12 @@ if run_and_print(wait_command, cwd=harness_dir, env=harness_env) == 0:
     # peak concurrency, preemptions and KV usage, as the engine itself counted them
     with urllib.request.urlopen("http://localhost:8000/metrics", timeout=30) as response:
         Path(f"{WORK_DIR}/results/engine-metrics.txt").write_bytes(response.read())
+# benchmarks load their own model: run them on the second T4 while the server holds the first
+benchmark_env = {**os.environ, "CUDA_VISIBLE_DEVICES": "1"}
 if TARGET != "vllm":
     run_and_print(
-        [sys.executable, "-m", "nanoengine.step_timing", "--output-dir", f"{WORK_DIR}/results"]
+        [sys.executable, "-m", "nanoengine.step_timing", "--output-dir", f"{WORK_DIR}/results"],
+        env=benchmark_env,
     )
 if TARGET.startswith("phase-06"):
     run_and_print(
@@ -99,11 +102,13 @@ if TARGET.startswith("phase-06"):
             "nanoengine.speculative_benchmark",
             "--output-dir",
             f"{WORK_DIR}/results",
-        ]
+        ],
+        env=benchmark_env,
     )
 if "int8" in TARGET:
     run_and_print(
-        [sys.executable, "-m", "nanoengine.quality_eval", "--output-dir", f"{WORK_DIR}/results"]
+        [sys.executable, "-m", "nanoengine.quality_eval", "--output-dir", f"{WORK_DIR}/results"],
+        env=benchmark_env,
     )""",
     """server.terminate()
 server.wait(timeout=60)
