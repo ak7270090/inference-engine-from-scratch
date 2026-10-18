@@ -30,7 +30,7 @@ Code at the end of each phase: `git checkout phase-NN`.
 | 2 | [KV cache](docs/phases/phase-02-kv-cache.md) | `kv_cache=contiguous` | done: decode step flat at 33 ms; long prompts 2.8x faster |
 | 3 | [Static and continuous batching](docs/phases/phase-03-batching.md) | `scheduler=static\|continuous` | done: 394–419 tok/s at 64 users |
 | 4 | [Paged KV cache](docs/phases/phase-04-paged.md) | `kv_cache=paged` | done: 64 users in memory (vs 18), 1,028 tok/s |
-| 5 | Prefix caching and chunked prefill | `prefix_cache=true`, `chunked_prefill=true` | built; T4 run in progress |
+| 5 | [Prefix caching and chunked prefill](docs/phases/phase-05-prefix-chunked.md) | `prefix_cache=true`, `chunked_prefill=true` | done: TTFT 67% lower on shared prompts; throughput regression under investigation |
 | 6 | [Speculative decoding](docs/phases/phase-06-speculative.md) | `speculative=ngram\|draft` | done: n-gram 1.8–3.1x for one user |
 | 7 | int8 weights, int8 KV cache, CUDA graphs | `quantization=int8`, `kv_cache_dtype=int8`, `cuda_graphs=true` | built; T4 run in progress |
 
