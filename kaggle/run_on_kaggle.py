@@ -132,7 +132,7 @@ def main() -> int:
     status = wait_for_kernel(kernel_id)
     results_dir = RESULTS_ROOT / f"{parsed.target}-t4"
     results_dir.mkdir(parents=True, exist_ok=True)
-    print(run_kaggle_with_retry("kernels", "output", kernel_id, "-p", str(results_dir)))
+    print(run_kaggle_with_retry("kernels", "output", kernel_id, "-p", str(results_dir), "--force"))
     print(f"results in {results_dir}")
     return 0 if "complete" in status else 1
 

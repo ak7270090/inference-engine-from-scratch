@@ -10,7 +10,6 @@ from nanoengine.engine.sequence_state import Sequence
 from nanoengine.models.attention_context import AttentionContext, build_attention_mask
 
 PADDING_TOKEN_ID = 0
-PADDING_SLOT = -1
 
 
 @dataclass(frozen=True)
@@ -41,7 +40,8 @@ def build_step_inputs(
     counts = torch.tensor(new_token_counts, device=device)
     is_real_token = torch.arange(query_length, device=device)[None, :] < counts[:, None]
     context_slots = allocator.build_context_slots(sequences, context_length)
-    slot_mapping = context_slots.gather(1, positions).masked_fill(~is_real_token, PADDING_SLOT)
+    slot_mapping = context_slots.gather(1, positions)
+    slot_mapping = slot_mapping.masked_fill(~is_real_token, pool.scratch_slot)
     context_lengths = torch.tensor([sequence.num_tokens for sequence in sequences], device=device)
     context = AttentionContext(
         positions=positions,

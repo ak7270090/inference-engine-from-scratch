@@ -1,0 +1,8 @@
+# Concurrency sweep: shared_prefix on http://localhost:8000
+
+Generated 2026-10-18 06:13 UTC. Latencies in ms; ITL is measured between streamed chunks.
+
+| Users | Requests | Errors | Total tok/s | Per-user tok/s | TTFT p50 | TTFT p99 | ITL p50 | ITL p99 | E2E p50 | E2E p99 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 64 | 0 | 20.8 | 20.9 | 64 | 78 | 47.7 | 54.0 | 3080 | 3141 |
+| 4 | 64 | 0 | 20.8 | 20.9 | 9296 | 9531 | 47.7 | 55.0 | 12313 | 12576 |

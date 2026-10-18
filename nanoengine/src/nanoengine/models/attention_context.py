@@ -16,7 +16,7 @@ class AttentionContext:
     """Padded batch of sequences; ``b`` sequences, ``q`` new tokens, ``c`` context tokens max."""
 
     positions: torch.Tensor  # [b, q] position of each new token (RoPE), 0 for padding
-    slot_mapping: torch.Tensor  # [b, q] slot that receives each new token's key / value, -1 = pad
+    slot_mapping: torch.Tensor  # [b, q] slot for each new token's key / value; pads: scratch slot
     context_slots: torch.Tensor  # [b, c] slots of every token a query may attend to
     attention_mask: torch.Tensor  # [b, 1, q, c] True where a query may attend to a key
     key_caches: list[torch.Tensor]  # per layer [num_slots, kv_heads, head_dim]
@@ -46,10 +46,13 @@ def run_cached_attention(
     """
     key_cache = context.key_caches[layer_index]
     value_cache = context.value_caches[layer_index]
-    is_real_token = context.slot_mapping >= 0
-    target_slots = context.slot_mapping[is_real_token]
-    key_cache[target_slots] = keys.transpose(1, 2)[is_real_token]
-    value_cache[target_slots] = values.transpose(1, 2)[is_real_token]
+    # padding goes to a scratch slot; masking it out instead would make the GPU stop and report
+    # how many tokens are real, once per layer, stalling the queue of launched work
+    target_slots = context.slot_mapping.reshape(-1)
+    key_cache.index_copy_(0, target_slots, keys.transpose(1, 2).reshape(-1, *key_cache.shape[1:]))
+    value_cache.index_copy_(
+        0, target_slots, values.transpose(1, 2).reshape(-1, *value_cache.shape[1:])
+    )
 
     heads_per_kv_head = queries.shape[1] // keys.shape[1]
     context_keys = key_cache[context.context_slots].transpose(1, 2)

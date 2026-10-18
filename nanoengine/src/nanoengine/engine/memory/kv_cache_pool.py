@@ -20,13 +20,18 @@ def count_slots_for_budget(config: Qwen3Config, dtype: torch.dtype, memory_megab
 
 
 class KVCachePool:
-    """``key_caches[layer]`` and ``value_caches[layer]`` are ``[num_slots, kv_heads, head_dim]``."""
+    """Per layer key and value caches, each ``[num_slots + 1, kv_heads, head_dim]``.
+
+    The extra last row is a scratch slot: padded tokens of a batch write there, so writes never
+    need a mask.
+    """
 
     def __init__(
         self, config: Qwen3Config, num_slots: int, device: torch.device, dtype: torch.dtype
     ) -> None:
-        shape = (num_slots, config.num_key_value_heads, config.head_dim)
+        shape = (num_slots + 1, config.num_key_value_heads, config.head_dim)
         self.num_slots = num_slots
+        self.scratch_slot = num_slots
         self.key_caches = [
             torch.zeros(shape, device=device, dtype=dtype) for _ in range(config.num_hidden_layers)
         ]

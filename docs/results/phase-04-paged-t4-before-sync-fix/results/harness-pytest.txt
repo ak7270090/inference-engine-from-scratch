@@ -1,0 +1,45 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.15, pytest-8.4.2, pluggy-1.6.0
+rootdir: /tmp/repo/engine-harness
+configfile: pyproject.toml
+plugins: typeguard-4.6.0, anyio-4.14.2, langsmith-0.12.1
+collected 7 items
+
+tests/suites/test_concurrency_and_capacity.py ..                         [ 28%]
+tests/suites/test_equivalence.py s                                       [ 42%]
+tests/suites/test_prefix_and_interference.py xx                          [ 71%]
+tests/suites/test_streaming_and_latency.py ..                            [100%]
+
+=============================== warnings summary ===============================
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+XFAIL tests/suites/test_prefix_and_interference.py::test_shared_prompt_start_cuts_time_to_first_token - expected to fail for this phase
+XFAIL tests/suites/test_prefix_and_interference.py::test_long_prompts_do_not_freeze_other_streams - expected to fail for this phase
+SKIPPED [1] tests/suites/test_equivalence.py:13: suite does not apply to this phase
+======= 4 passed, 1 skipped, 2 xfailed, 14 warnings in 882.46s (0:14:42) =======
