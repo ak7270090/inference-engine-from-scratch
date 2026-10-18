@@ -42,6 +42,14 @@ class ContiguousSlotAllocator:
         if region is not None:
             self._free_regions.append(region)
 
+    @property
+    def num_prefix_hit_tokens(self) -> int:
+        """Prompt tokens served from the prefix cache instead of computed (0 without one)."""
+        return 0
+
+    def on_tokens_cached(self, sequence: Sequence) -> None:
+        """Called after a step wrote more of ``sequence`` into the cache."""
+
     def build_context_slots(self, sequences: list[Sequence], context_length: int) -> torch.Tensor:
         region_starts = torch.tensor(
             [

@@ -12,6 +12,8 @@ from nanoengine.constants import (
     ENV_FILE_VARIABLE,
     ENV_PREFIX,
     KV_CACHE_NONE,
+    KV_CACHE_PAGED,
+    SCHEDULER_CONTINUOUS,
     SCHEDULER_SERIAL,
 )
 
@@ -42,6 +44,11 @@ class EngineSettings(BaseSettings):
     max_prefill_tokens: int = Field(default=4096, ge=1)
     batch_fill_timeout_ms: int = Field(default=50, ge=0)
 
+    # prefix caching and chunked prefill (phase 5)
+    prefix_cache: bool = False
+    chunked_prefill: bool = False
+    max_num_batched_tokens: int = Field(default=512, ge=1)
+
     host: str = "0.0.0.0"
     port: int = 8000
     log_level: str = "info"
@@ -58,6 +65,10 @@ class EngineSettings(BaseSettings):
     def check_batching_has_a_kv_cache(self) -> "EngineSettings":
         if self.is_batched and self.kv_cache == KV_CACHE_NONE:
             raise ValueError(f"scheduler={self.scheduler} needs kv_cache=contiguous or paged")
+        if self.prefix_cache and self.kv_cache != KV_CACHE_PAGED:
+            raise ValueError("prefix_cache needs kv_cache=paged (it shares blocks)")
+        if self.chunked_prefill and self.scheduler != SCHEDULER_CONTINUOUS:
+            raise ValueError("chunked_prefill needs scheduler=continuous")
         return self
 
 

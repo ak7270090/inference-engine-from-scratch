@@ -6,6 +6,7 @@ from nanoengine.constants import STEP_LATENCY_BUCKETS_SECONDS
 
 STEP_KIND_PREFILL = "prefill"
 STEP_KIND_DECODE = "decode"
+STEP_KIND_MIXED = "mixed"
 
 
 class EngineMetrics:
@@ -55,6 +56,11 @@ class EngineMetrics:
         self.kv_cache_stored_tokens = Gauge(
             "nanoengine_kv_cache_stored_tokens",
             "Tokens actually stored; stored / reserved is the memory utilization",
+            registry=self.registry,
+        )
+        self.prefix_cache_hit_tokens = Gauge(
+            "nanoengine_prefix_cache_hit_tokens",
+            "Prompt tokens taken from the prefix cache instead of computed, since start",
             registry=self.registry,
         )
 

@@ -58,6 +58,14 @@ class PagedSlotAllocator:
         for block in self._block_tables.pop(sequence.request_id, []):
             self._blocks.free(block)
 
+    @property
+    def num_prefix_hit_tokens(self) -> int:
+        """Prompt tokens served from the prefix cache instead of computed (0 without one)."""
+        return 0
+
+    def on_tokens_cached(self, sequence: Sequence) -> None:
+        """Called after a step wrote more of ``sequence`` into the cache."""
+
     def build_context_slots(self, sequences: list[Sequence], context_length: int) -> torch.Tensor:
         """One slot per token position ``p``: ``table[p // size] * size + p % size``."""
         blocks_per_row = math.ceil(context_length / self.block_size)

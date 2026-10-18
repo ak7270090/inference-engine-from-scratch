@@ -15,7 +15,12 @@ import torch
 
 from nanoengine.engine.generation.model_runner import ModelRunner
 from nanoengine.engine.interface import GenerationRequest, TokenEvent
-from nanoengine.engine.metrics import STEP_KIND_DECODE, STEP_KIND_PREFILL, EngineMetrics
+from nanoengine.engine.metrics import (
+    STEP_KIND_DECODE,
+    STEP_KIND_MIXED,
+    STEP_KIND_PREFILL,
+    EngineMetrics,
+)
 from nanoengine.engine.sampling import find_finish_reason
 from nanoengine.engine.scheduling.batch_scheduler import ContinuousBatchScheduler, StepPlan
 from nanoengine.engine.scheduling.request_queue import (
@@ -80,7 +85,7 @@ class BatchEngineLoop:
                 continue
             plan = self._scheduler.schedule(self._waiting, self._running, time.perf_counter())
             self._metrics.preemptions.inc(len(plan.preempted))
-            if not plan.sequences:
+            if not plan.sequences and not plan.prefill_chunks:
                 await asyncio.sleep(plan.wait_seconds)
                 continue
             await self._run_step(plan)
@@ -89,18 +94,40 @@ class BatchEngineLoop:
     async def _run_step(self, plan: StepPlan) -> None:
         step_started_at = time.perf_counter()
         try:
-            token_ids = await asyncio.to_thread(self._runner.run_step, plan.sequences)
+            new_tokens = await asyncio.to_thread(self._execute_plan, plan)
         except Exception as error:
-            logger.exception("batched step failed", extra={"batch_size": len(plan.sequences)})
-            for sequence in plan.sequences:
+            stepped = [*plan.sequences, *(sequence for sequence, _ in plan.prefill_chunks)]
+            logger.exception("batched step failed", extra={"batch_size": len(stepped)})
+            for sequence in stepped:
                 self._fail(sequence, error)
             return
-        step_kind = STEP_KIND_PREFILL if plan.is_prefill else STEP_KIND_DECODE
+        if plan.prefill_chunks:
+            step_kind = STEP_KIND_MIXED
+        else:
+            step_kind = STEP_KIND_PREFILL if plan.is_prefill else STEP_KIND_DECODE
         self._metrics.step_latency_seconds.labels(step_kind).observe(
             time.perf_counter() - step_started_at
         )
-        for sequence, token_id in zip(plan.sequences, token_ids, strict=True):
+        for sequence, token_id in new_tokens:
             self._emit_token(sequence, token_id)
+
+    def _execute_plan(self, plan: StepPlan) -> list[tuple[Sequence, int]]:
+        """Runs in a worker thread. Whole sequences and prompt chunks are separate forward passes,
+        so one-token decodes are not padded to the chunk length."""
+        new_tokens: list[tuple[Sequence, int]] = []
+        if plan.sequences:
+            token_ids = self._runner.run_step(plan.sequences)
+            new_tokens.extend(zip(plan.sequences, token_ids, strict=True))
+        if plan.prefill_chunks:
+            chunk_sequences = [sequence for sequence, _ in plan.prefill_chunks]
+            chunk_sizes = [chunk_tokens for _, chunk_tokens in plan.prefill_chunks]
+            token_ids = self._runner.run_step(chunk_sequences, chunk_sizes)
+            new_tokens.extend(
+                (sequence, token_id)
+                for sequence, token_id in zip(chunk_sequences, token_ids, strict=True)
+                if sequence.num_uncached_tokens == 0
+            )
+        return new_tokens
 
     def _emit_token(self, sequence: Sequence, token_id: int) -> None:
         sequence.token_ids.append(token_id)
@@ -146,3 +173,4 @@ class BatchEngineLoop:
         self._metrics.kv_cache_stored_tokens.set(
             sum(sequence.num_cached_tokens for sequence in self._running)
         )
+        self._metrics.prefix_cache_hit_tokens.set(self._runner.allocator.num_prefix_hit_tokens)

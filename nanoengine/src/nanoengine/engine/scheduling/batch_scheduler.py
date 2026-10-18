@@ -2,7 +2,9 @@
 
 Continuous (iteration-level) batching re-decides every step: finished sequences leave, waiting
 ones join as soon as there is a seat and KV memory. Static batching admits a batch, then runs it
-until every sequence in it is done, leaving finished seats empty.
+until every sequence in it is done, leaving finished seats empty. Chunked prefill splits prompts
+into pieces that share each step's token budget with the decoding sequences, so a long prompt
+cannot freeze everyone else's stream.
 """
 
 from collections import deque
@@ -11,13 +13,18 @@ from dataclasses import dataclass, field
 from nanoengine.engine.memory.slot_allocator import SlotAllocator
 from nanoengine.engine.sequence_state import Sequence
 
+UNLIMITED_PREFILL_TOKENS = 10**9
+
 
 @dataclass(frozen=True)
 class StepPlan:
+    """``sequences`` cache all their uncached tokens; ``prefill_chunks`` cache only a slice."""
+
     sequences: list[Sequence]
     is_prefill: bool = False
     wait_seconds: float = 0.0
     preempted: list[Sequence] = field(default_factory=list)
+    prefill_chunks: list[tuple[Sequence, int]] = field(default_factory=list)
 
 
 class ContinuousBatchScheduler:
@@ -54,8 +61,15 @@ class ContinuousBatchScheduler:
 
     def plan_decode(self, waiting: deque[Sequence], running: list[Sequence]) -> StepPlan:
         """Give every running sequence room for one more token, preempting the newest if needed."""
+        preempted = self.reserve_next_tokens(waiting, running, list(running))
+        return StepPlan(list(running), preempted=preempted)
+
+    def reserve_next_tokens(
+        self, waiting: deque[Sequence], running: list[Sequence], growing: list[Sequence]
+    ) -> list[Sequence]:
+        """Reserve one more token for each of ``growing``; returns the preempted sequences."""
         preempted: list[Sequence] = []
-        for sequence in list(running):
+        for sequence in growing:
             if sequence not in running:
                 continue
             while not self._allocator.can_reserve(sequence, sequence.num_tokens):
@@ -68,7 +82,32 @@ class ContinuousBatchScheduler:
                     break
             if sequence in running:
                 self._allocator.reserve(sequence, sequence.num_tokens)
-        return StepPlan(list(running), preempted=preempted)
+        return preempted
+
+
+class ChunkedPrefillScheduler(ContinuousBatchScheduler):
+    """Every step: one token for each decoding sequence plus prompt chunks, together at most
+    ``max_num_batched_tokens``. Prompts reserve their KV memory when admitted."""
+
+    def __init__(
+        self, allocator: SlotAllocator, max_num_seqs: int, max_num_batched_tokens: int
+    ) -> None:
+        super().__init__(allocator, max_num_seqs, UNLIMITED_PREFILL_TOKENS)
+        self._max_num_batched_tokens = max_num_batched_tokens
+
+    def schedule(self, waiting: deque[Sequence], running: list[Sequence], now: float) -> StepPlan:
+        self.admit_waiting(waiting, running)
+        decoding = [sequence for sequence in running if sequence.num_uncached_tokens == 1]
+        preempted = self.reserve_next_tokens(waiting, running, decoding)
+        decoding = [sequence for sequence in decoding if sequence in running]
+        token_budget = max(self._max_num_batched_tokens - len(decoding), 0)
+        prefill_chunks = []
+        for sequence in running:
+            if sequence.num_uncached_tokens > 1 and token_budget > 0:
+                chunk_tokens = min(sequence.num_uncached_tokens, token_budget)
+                prefill_chunks.append((sequence, chunk_tokens))
+                token_budget -= chunk_tokens
+        return StepPlan(decoding, preempted=preempted, prefill_chunks=prefill_chunks)
 
 
 class StaticBatchScheduler(ContinuousBatchScheduler):

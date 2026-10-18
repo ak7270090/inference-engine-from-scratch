@@ -1,4 +1,4 @@
-"""Pack the uncached tokens of several sequences into one padded step for the model."""
+"""Pack the next tokens of several sequences into one padded step for the model."""
 
 from dataclasses import dataclass
 
@@ -24,16 +24,25 @@ def build_step_inputs(
     allocator: SlotAllocator,
     pool: KVCachePool,
     device: torch.device,
+    token_counts: list[int] | None = None,
 ) -> StepInputs:
-    """Prefill sequences bring all their uncached tokens, decoding sequences bring one."""
-    new_token_counts = [sequence.num_uncached_tokens for sequence in sequences]
+    """Each sequence brings its next ``token_counts[i]`` uncached tokens (default: all of them).
+
+    A whole prompt is a prefill, a slice of one is a prefill chunk, one token is a decode step.
+    """
+    new_token_counts = token_counts or [sequence.num_uncached_tokens for sequence in sequences]
+    end_positions = [
+        sequence.num_cached_tokens + count
+        for sequence, count in zip(sequences, new_token_counts, strict=True)
+    ]
     query_length = max(new_token_counts)
-    context_length = max(sequence.num_tokens for sequence in sequences)
+    context_length = max(end_positions)
     token_rows, position_rows = [], []
-    for sequence, new_token_count in zip(sequences, new_token_counts, strict=True):
-        padding = [PADDING_TOKEN_ID] * (query_length - new_token_count)
-        token_rows.append(sequence.token_ids[sequence.num_cached_tokens :] + padding)
-        position_rows.append(list(range(sequence.num_cached_tokens, sequence.num_tokens)) + padding)
+    for sequence, end in zip(sequences, end_positions, strict=True):
+        start = sequence.num_cached_tokens
+        padding = [PADDING_TOKEN_ID] * (query_length - (end - start))
+        token_rows.append(sequence.token_ids[start:end] + padding)
+        position_rows.append(list(range(start, end)) + padding)
 
     token_ids = torch.tensor(token_rows, device=device)
     positions = torch.tensor(position_rows, device=device)
@@ -42,7 +51,7 @@ def build_step_inputs(
     context_slots = allocator.build_context_slots(sequences, context_length)
     slot_mapping = context_slots.gather(1, positions)
     slot_mapping = slot_mapping.masked_fill(~is_real_token, pool.scratch_slot)
-    context_lengths = torch.tensor([sequence.num_tokens for sequence in sequences], device=device)
+    context_lengths = torch.tensor(end_positions, device=device)
     context = AttentionContext(
         positions=positions,
         slot_mapping=slot_mapping,

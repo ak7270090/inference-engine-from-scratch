@@ -18,10 +18,12 @@ from nanoengine.engine.interface import InferenceEngine
 from nanoengine.engine.memory.contiguous_allocator import ContiguousSlotAllocator
 from nanoengine.engine.memory.kv_cache_pool import KVCachePool, count_slots_for_budget
 from nanoengine.engine.memory.paged_allocator import PagedSlotAllocator
+from nanoengine.engine.memory.prefix_cache import PrefixCachingSlotAllocator
 from nanoengine.engine.memory.slot_allocator import SlotAllocator
 from nanoengine.engine.metrics import EngineMetrics
 from nanoengine.engine.scheduling.batch_engine_loop import BatchEngineLoop
 from nanoengine.engine.scheduling.batch_scheduler import (
+    ChunkedPrefillScheduler,
     ContinuousBatchScheduler,
     StaticBatchScheduler,
 )
@@ -75,7 +77,8 @@ def create_slot_allocator(
             f"kv_cache_memory_mb={settings.kv_cache_memory_mb} holds fewer tokens than "
             f"max_model_len={settings.max_model_len}; raise the budget"
         )
-    allocator = PagedSlotAllocator(num_blocks, settings.kv_block_size, device)
+    allocator_class = PrefixCachingSlotAllocator if settings.prefix_cache else PagedSlotAllocator
+    allocator = allocator_class(num_blocks, settings.kv_block_size, device)
     return allocator, num_blocks * settings.kv_block_size
 
 
@@ -88,6 +91,10 @@ def create_batch_scheduler(
             settings.max_num_seqs,
             settings.max_prefill_tokens,
             settings.batch_fill_timeout_ms / MILLISECONDS_PER_SECOND,
+        )
+    if settings.chunked_prefill:
+        return ChunkedPrefillScheduler(
+            allocator, settings.max_num_seqs, settings.max_num_batched_tokens
         )
     return ContinuousBatchScheduler(allocator, settings.max_num_seqs, settings.max_prefill_tokens)
 

@@ -26,6 +26,13 @@ class SlotAllocator(Protocol):
 
     def free(self, sequence: Sequence) -> None: ...
 
+    @property
+    def num_prefix_hit_tokens(self) -> int: ...
+
+    def on_tokens_cached(self, sequence: Sequence) -> None:
+        """Called after a step wrote more of ``sequence``'s keys / values into the pool."""
+        ...
+
     def build_context_slots(self, sequences: list[Sequence], context_length: int) -> torch.Tensor:
         """``[len(sequences), context_length]``: the slot holding each token position."""
         ...

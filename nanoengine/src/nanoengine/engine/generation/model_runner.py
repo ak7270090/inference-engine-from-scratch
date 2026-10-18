@@ -28,15 +28,24 @@ class ModelRunner:
         return self._model.config.vocab_size
 
     @torch.inference_mode()
-    def run_step(self, sequences: list[Sequence]) -> list[int]:
-        """Caller has reserved KV memory for every token; returns the sampled token per sequence."""
-        inputs = build_step_inputs(sequences, self.allocator, self._pool, self._device)
+    def run_step(
+        self, sequences: list[Sequence], token_counts: list[int] | None = None
+    ) -> list[int]:
+        """Cache the next ``token_counts`` tokens of each sequence (default: all uncached) and
+        sample from the last one. The sample only counts once a sequence is fully cached; after a
+        partial prefill chunk the caller drops it. KV memory must already be reserved.
+        """
+        inputs = build_step_inputs(
+            sequences, self.allocator, self._pool, self._device, token_counts
+        )
         hidden_states = self._model(inputs.token_ids, inputs.context)
         batch_rows = torch.arange(len(sequences), device=self._device)
         logits = self._model.compute_logits(hidden_states[batch_rows, inputs.last_token_indices])
         token_ids = self._sample(logits, sequences)
-        for sequence in sequences:
-            sequence.num_cached_tokens = sequence.num_tokens
+        counts = token_counts or [sequence.num_uncached_tokens for sequence in sequences]
+        for sequence, count in zip(sequences, counts, strict=True):
+            sequence.num_cached_tokens += count
+            self.allocator.on_tokens_cached(sequence)
         return token_ids
 
     def _sample(self, logits: torch.Tensor, sequences: list[Sequence]) -> list[int]:
