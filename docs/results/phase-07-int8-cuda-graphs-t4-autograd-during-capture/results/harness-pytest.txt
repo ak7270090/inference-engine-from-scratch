@@ -1,0 +1,176 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.15, pytest-8.4.2, pluggy-1.6.0
+rootdir: /tmp/repo/engine-harness
+configfile: pyproject.toml
+plugins: typeguard-4.6.0, anyio-4.14.2, langsmith-0.12.1
+collected 7 items
+
+tests/suites/test_concurrency_and_capacity.py FF                         [ 28%]
+tests/suites/test_equivalence.py s                                       [ 42%]
+tests/suites/test_prefix_and_interference.py .F                          [ 71%]
+tests/suites/test_streaming_and_latency.py ..                            [100%]
+
+=================================== FAILURES ===================================
+____________________ test_total_throughput_grows_with_users ____________________
+
+request = <FixtureRequest for <Function test_total_throughput_grows_with_users>>
+harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])
+harness_report = <engineharness.report_writer.HarnessReport object at 0x7ef67f6dd400>
+engine_session = <aiohttp.client.ClientSession object at 0x7ef67e440c20>
+engine_tokenizer = <engineharness.workloads.HubTokenizer object at 0x7ef67f6df770>
+
+    @pytest.mark.concurrency
+    async def test_total_throughput_grows_with_users(
+        request, harness_settings, harness_report, engine_session, engine_tokenizer
+    ) -> None:
+        spec = get_workload_spec(harness_settings.workload_scale, WORKLOAD_SHORT_CHAT)
+        requests = build_requests(spec, engine_tokenizer, harness_settings.seed)
+        levels = harness_settings.concurrency_levels
+    
+        metrics = await run_concurrency_sweep(
+            engine_session, requests, levels, harness_settings.model_id, WORKLOAD_SHORT_CHAT
+        )
+        write_sweep_results(harness_settings.results_dir, metrics, harness_settings.target_url)
+        speedup = metrics[-1].total_tokens_per_second / max(metrics[0].total_tokens_per_second, 1e-9)
+    
+        harness_report.record(
+            request.node.nodeid,
+            SuiteResult(
+                SUITE_CONCURRENCY,
+                WORKLOAD_SHORT_CHAT,
+                f"{metrics[0].total_tokens_per_second:.1f} -> "
+                f"{metrics[-1].total_tokens_per_second:.1f} tok/s ({speedup:.1f}x)",
+                f">= {harness_settings.concurrency_min_speedup:.1f}x at {levels[-1]} users",
+                f"levels {levels}",
+            ),
+        )
+>       assert all(level.error_count == 0 for level in metrics)
+E       assert False
+E        +  where False = all(<generator object test_total_throughput_grows_with_users.<locals>.<genexpr> at 0x7ef66e5c2dc0>)
+
+tests/suites/test_concurrency_and_capacity.py:43: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+______________ test_a_burst_of_requests_is_served_without_errors _______________
+
+request = <FixtureRequest for <Function test_a_burst_of_requests_is_served_without_errors>>
+harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])
+harness_report = <engineharness.report_writer.HarnessReport object at 0x7ef67f6dd400>
+engine_session = <aiohttp.client.ClientSession object at 0x7ef66e364b90>
+engine_tokenizer = <engineharness.workloads.HubTokenizer object at 0x7ef67f6df770>
+
+    @pytest.mark.capacity
+    async def test_a_burst_of_requests_is_served_without_errors(
+        request, harness_settings, harness_report, engine_session, engine_tokenizer
+    ) -> None:
+        spec = get_workload_spec(harness_settings.workload_scale, WORKLOAD_BURST)
+        requests = build_requests(spec, engine_tokenizer, harness_settings.seed)
+    
+        metrics = await run_concurrency_level(
+            engine_session, requests, len(requests), harness_settings.model_id, WORKLOAD_BURST
+        )
+        error_rate = metrics.error_count / metrics.request_count
+    
+        harness_report.record(
+            request.node.nodeid,
+            SuiteResult(
+                SUITE_CAPACITY,
+                WORKLOAD_BURST,
+                f"{metrics.error_count}/{metrics.request_count} errors, "
+                f"{metrics.total_tokens_per_second:.1f} tok/s",
+                f"error rate <= {harness_settings.capacity_max_error_rate:.0%}",
+                f"E2E p99 {metrics.end_to_end.p99_ms:.0f} ms",
+            ),
+        )
+>       assert error_rate <= harness_settings.capacity_max_error_rate
+E       AssertionError: assert 1.0 <= 0.0
+E        +  where 0.0 = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths']).capacity_max_error_rate
+
+tests/suites/test_concurrency_and_capacity.py:70: AssertionError
+________________ test_long_prompts_do_not_freeze_other_streams _________________
+
+request = <FixtureRequest for <Function test_long_prompts_do_not_freeze_other_streams>>
+harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])
+harness_report = <engineharness.report_writer.HarnessReport object at 0x7ef67f6dd400>
+engine_session = <aiohttp.client.ClientSession object at 0x7ef66e367390>
+engine_tokenizer = <engineharness.workloads.HubTokenizer object at 0x7ef67f6df770>
+
+    @pytest.mark.long_prompt_interference
+    async def test_long_prompts_do_not_freeze_other_streams(
+        request, harness_settings, harness_report, engine_session, engine_tokenizer
+    ) -> None:
+        scale = harness_settings.workload_scale
+        chats = build_requests(
+            get_workload_spec(scale, WORKLOAD_SHORT_CHAT), engine_tokenizer, harness_settings.seed
+        )[: INTERFERENCE_USERS * 2]
+        long_prompts = build_requests(
+            get_workload_spec(scale, WORKLOAD_LONG_PROMPT), engine_tokenizer, harness_settings.seed
+        )
+        model_id = harness_settings.model_id
+    
+        alone = await run_concurrency_level(
+            engine_session, chats, INTERFERENCE_USERS, model_id, WORKLOAD_SHORT_CHAT
+        )
+        disturbed, _ = await asyncio.gather(
+            run_concurrency_level(
+                engine_session, chats, INTERFERENCE_USERS, model_id, WORKLOAD_SHORT_CHAT
+            ),
+            run_concurrency_level(engine_session, long_prompts, 1, model_id, WORKLOAD_LONG_PROMPT),
+        )
+        ratio = disturbed.inter_token.p99_ms / max(alone.inter_token.p99_ms, 1e-9)
+    
+        harness_report.record(
+            request.node.nodeid,
+            SuiteResult(
+                SUITE_LONG_PROMPT_INTERFERENCE,
+                WORKLOAD_SHORT_CHAT,
+                f"ITL p99 {alone.inter_token.p99_ms:.0f} -> {disturbed.inter_token.p99_ms:.0f} ms "
+                f"({ratio:.1f}x)",
+                f"<= {harness_settings.interference_max_itl_ratio:.1f}x",
+                f"{len(long_prompts)} long prompts arriving",
+            ),
+        )
+        assert alone.error_count == disturbed.error_count == 0
+>       assert ratio <= harness_settings.interference_max_itl_ratio
+E       AssertionError: assert 2.1064172277478557 <= 2.0
+E        +  where 2.0 = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths']).interference_max_itl_ratio
+
+tests/suites/test_prefix_and_interference.py:95: AssertionError
+=============================== warnings summary ===============================
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users
+  /usr/local/lib/python3.13/dist-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/suites/test_equivalence.py:13: suite does not apply to this phase
+======= 3 failed, 3 passed, 1 skipped, 14 warnings in 1201.59s (0:20:01) =======

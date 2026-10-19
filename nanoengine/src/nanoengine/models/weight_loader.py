@@ -45,4 +45,4 @@ def load_qwen3_model(model_dir: Path, device: torch.device, dtype: torch.dtype) 
         tensors.pop(LM_HEAD_WEIGHT_NAME, None)
     tensors = {name: tensor.to(device=device, dtype=dtype) for name, tensor in tensors.items()}
     model.load_state_dict(tensors, strict=True, assign=True)
-    return model.eval()
+    return model.eval().requires_grad_(False)

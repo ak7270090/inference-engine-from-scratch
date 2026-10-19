@@ -1,0 +1,347 @@
+[{"stream_name":"stderr","time":7.419926355,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.419966073,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.419973344,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.419977835,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.030540224,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.030566441,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.030569672,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.030572722,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":9.770089183,"data":"$ nvidia-smi -\u003e 0\n"}
+,{"stream_name":"stdout","time":9.770126212,"data":"Sun Oct 18 18:04:49 2026       \n"}
+,{"stream_name":"stdout","time":9.770131662,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":9.770139966,"data":"| NVIDIA-SMI 580.178.04             Driver Version: 580.178.04     CUDA Version: 13.0     |\n"}
+,{"stream_name":"stdout","time":9.770144394,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":9.770148846,"data":"| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n"}
+,{"stream_name":"stdout","time":9.770153056,"data":"| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n"}
+,{"stream_name":"stdout","time":9.770157112,"data":"|                                         |                        |               MIG M. |\n"}
+,{"stream_name":"stdout","time":9.770160764,"data":"|=========================================+========================+======================|\n"}
+,{"stream_name":"stdout","time":9.770164885,"data":"|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":9.77016859,"data":"| N/A   57C    P8             11W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":9.770172089999999,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":9.770175712,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":9.770183117,"data":"|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":9.770186171,"data":"| N/A   54C    P8             10W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":9.77018856,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":9.770190987,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":9.770193392,"data":"\n"}
+,{"stream_name":"stdout","time":9.770195627,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":9.770198293,"data":"| Processes:                                                                              |\n"}
+,{"stream_name":"stdout","time":9.770207477,"data":"|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n"}
+,{"stream_name":"stdout","time":9.770210053,"data":"|        ID   ID                                                               Usage      |\n"}
+,{"stream_name":"stdout","time":9.770212435,"data":"|=========================================================================================|\n"}
+,{"stream_name":"stdout","time":9.770214779,"data":"|  No running processes found                                                             |\n"}
+,{"stream_name":"stdout","time":9.770239084,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":9.770244465,"data":" \n"}
+,{"stream_name":"stdout","time":11.845922182,"data":"$ git clone --depth 1 --branch main https://github.com/ak7270090/inference-engine-from-scratch.git /tmp/repo -\u003e 0\n"}
+,{"stream_name":"stdout","time":11.845954118,"data":" Cloning into '/tmp/repo'...\n"}
+,{"stream_name":"stdout","time":11.845957753,"data":"\n"}
+,{"stream_name":"stdout","time":22.760846181,"data":"$ /usr/bin/python3 -m pip install -q -e /tmp/repo/engine-harness -\u003e 0\n"}
+,{"stream_name":"stdout","time":22.760881481,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.4/80.4 kB 1.8 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":22.76088657,"data":" \n"}
+,{"stream_name":"stdout","time":31.724743095,"data":"$ /usr/bin/python3 -m pip install -q -e /tmp/repo/nanoengine -\u003e 0\n"}
+,{"stream_name":"stdout","time":31.724777738,"data":" \n"}
+,{"stream_name":"stdout","time":60.642392838,"data":"$ /usr/bin/python3 -m engineharness wait -\u003e 0\n"}
+,{"stream_name":"stdout","time":60.642431339,"data":"engine ready\n"}
+,{"stream_name":"stdout","time":60.642435941,"data":" \n"}
+,{"stream_name":"stdout","time":1264.368077251,"data":"$ /usr/bin/python3 -m pytest tests/suites -rxXs -\u003e 1\n"}
+,{"stream_name":"stdout","time":1264.36812832,"data":"============================= test session starts ==============================\n"}
+,{"stream_name":"stdout","time":1264.3681352,"data":"platform linux -- Python 3.13.15, pytest-8.4.2, pluggy-1.6.0\n"}
+,{"stream_name":"stdout","time":1264.368140398,"data":"rootdir: /tmp/repo/engine-harness\n"}
+,{"stream_name":"stdout","time":1264.368145398,"data":"configfile: pyproject.toml\n"}
+,{"stream_name":"stdout","time":1264.36815021,"data":"plugins: typeguard-4.6.0, anyio-4.14.2, langsmith-0.12.1\n"}
+,{"stream_name":"stdout","time":1264.368155187,"data":"collected 7 items\n"}
+,{"stream_name":"stdout","time":1264.368159987,"data":"\n"}
+,{"stream_name":"stdout","time":1264.36816441,"data":"tests/suites/test_concurrency_and_capacity.py FF                         [ 28%]\n"}
+,{"stream_name":"stdout","time":1264.368169051,"data":"tests/suites/test_equivalence.py s                                       [ 42%]\n"}
+,{"stream_name":"stdout","time":1264.368173525,"data":"tests/suites/test_prefix_and_interference.py .F                          [ 71%]\n"}
+,{"stream_name":"stdout","time":1264.368177899,"data":"tests/suites/test_streaming_and_latency.py ..                            [100%]\n"}
+,{"stream_name":"stdout","time":1264.368182376,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368186585,"data":"=================================== FAILURES ===================================\n"}
+,{"stream_name":"stdout","time":1264.368191095,"data":"____________________ test_total_throughput_grows_with_users ____________________\n"}
+,{"stream_name":"stdout","time":1264.368203595,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368207134,"data":"request = \u003cFixtureRequest for \u003cFunction test_total_throughput_grows_with_users\u003e\u003e\n"}
+,{"stream_name":"stdout","time":1264.368211974,"data":"harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])\n"}
+,{"stream_name":"stdout","time":1264.368231681,"data":"harness_report = \u003cengineharness.report_writer.HarnessReport object at 0x7ef67f6dd400\u003e\n"}
+,{"stream_name":"stdout","time":1264.368236165,"data":"engine_session = \u003caiohttp.client.ClientSession object at 0x7ef67e440c20\u003e\n"}
+,{"stream_name":"stdout","time":1264.368240336,"data":"engine_tokenizer = \u003cengineharness.workloads.HubTokenizer object at 0x7ef67f6df770\u003e\n"}
+,{"stream_name":"stdout","time":1264.36824653,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368250727,"data":"    @pytest.mark.concurrency\n"}
+,{"stream_name":"stdout","time":1264.368254458,"data":"    async def test_total_throughput_grows_with_users(\n"}
+,{"stream_name":"stdout","time":1264.368258429,"data":"        request, harness_settings, harness_report, engine_session, engine_tokenizer\n"}
+,{"stream_name":"stdout","time":1264.368262394,"data":"    ) -\u003e None:\n"}
+,{"stream_name":"stdout","time":1264.368266256,"data":"        spec = get_workload_spec(harness_settings.workload_scale, WORKLOAD_SHORT_CHAT)\n"}
+,{"stream_name":"stdout","time":1264.368270169,"data":"        requests = build_requests(spec, engine_tokenizer, harness_settings.seed)\n"}
+,{"stream_name":"stdout","time":1264.368274011,"data":"        levels = harness_settings.concurrency_levels\n"}
+,{"stream_name":"stdout","time":1264.368277604,"data":"    \n"}
+,{"stream_name":"stdout","time":1264.368281584,"data":"        metrics = await run_concurrency_sweep(\n"}
+,{"stream_name":"stdout","time":1264.368285409,"data":"            engine_session, requests, levels, harness_settings.model_id, WORKLOAD_SHORT_CHAT\n"}
+,{"stream_name":"stdout","time":1264.368289393,"data":"        )\n"}
+,{"stream_name":"stdout","time":1264.368295088,"data":"        write_sweep_results(harness_settings.results_dir, metrics, harness_settings.target_url)\n"}
+,{"stream_name":"stdout","time":1264.368299221,"data":"        speedup = metrics[-1].total_tokens_per_second / max(metrics[0].total_tokens_per_second, 1e-9)\n"}
+,{"stream_name":"stdout","time":1264.368303214,"data":"    \n"}
+,{"stream_name":"stdout","time":1264.368306887,"data":"        harness_report.record(\n"}
+,{"stream_name":"stdout","time":1264.368310544,"data":"            request.node.nodeid,\n"}
+,{"stream_name":"stdout","time":1264.368314335,"data":"            SuiteResult(\n"}
+,{"stream_name":"stdout","time":1264.368318034,"data":"                SUITE_CONCURRENCY,\n"}
+,{"stream_name":"stdout","time":1264.3683218,"data":"                WORKLOAD_SHORT_CHAT,\n"}
+,{"stream_name":"stdout","time":1264.368325556,"data":"                f\"{metrics[0].total_tokens_per_second:.1f} -\u003e \"\n"}
+,{"stream_name":"stdout","time":1264.368329665,"data":"                f\"{metrics[-1].total_tokens_per_second:.1f} tok/s ({speedup:.1f}x)\",\n"}
+,{"stream_name":"stdout","time":1264.368333836,"data":"                f\"\u003e= {harness_settings.concurrency_min_speedup:.1f}x at {levels[-1]} users\",\n"}
+,{"stream_name":"stdout","time":1264.36833808,"data":"                f\"levels {levels}\",\n"}
+,{"stream_name":"stdout","time":1264.368341971,"data":"            ),\n"}
+,{"stream_name":"stdout","time":1264.368345711,"data":"        )\n"}
+,{"stream_name":"stdout","time":1264.368353543,"data":"\u003e       assert all(level.error_count == 0 for level in metrics)\n"}
+,{"stream_name":"stdout","time":1264.3683576,"data":"E       assert False\n"}
+,{"stream_name":"stdout","time":1264.368361329,"data":"E        +  where False = all(\u003cgenerator object test_total_throughput_grows_with_users.\u003clocals\u003e.\u003cgenexpr\u003e at 0x7ef66e5c2dc0\u003e)\n"}
+,{"stream_name":"stdout","time":1264.368365872,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368369461,"data":"tests/suites/test_concurrency_and_capacity.py:43: AssertionError\n"}
+,{"stream_name":"stdout","time":1264.368373343,"data":"------------------------------ Captured log call -------------------------------\n"}
+,{"stream_name":"stdout","time":1264.36837741,"data":"WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'\n"}
+,{"stream_name":"stdout","time":1264.368381709,"data":"WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'\n"}
+,{"stream_name":"stdout","time":1264.368386031,"data":"WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'\n"}
+,{"stream_name":"stdout","time":1264.368390294,"data":"WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'\n"}
+,{"stream_name":"stdout","time":1264.368394534,"data":"WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'\n"}
+,{"stream_name":"stdout","time":1264.368398805,"data":"WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'\n"}
+,{"stream_name":"stdout","time":1264.368403491,"data":"WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'\n"}
+,{"stream_name":"stdout","time":1264.368407765,"data":"WARNING  matplotlib.style.core:core.py:205 In /usr/local/lib/python3.13/dist-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'\n"}
+,{"stream_name":"stdout","time":1264.368412071,"data":"______________ test_a_burst_of_requests_is_served_without_errors _______________\n"}
+,{"stream_name":"stdout","time":1264.368416117,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368419647,"data":"request = \u003cFixtureRequest for \u003cFunction test_a_burst_of_requests_is_served_without_errors\u003e\u003e\n"}
+,{"stream_name":"stdout","time":1264.368423956,"data":"harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])\n"}
+,{"stream_name":"stdout","time":1264.368428507,"data":"harness_report = \u003cengineharness.report_writer.HarnessReport object at 0x7ef67f6dd400\u003e\n"}
+,{"stream_name":"stdout","time":1264.368432616,"data":"engine_session = \u003caiohttp.client.ClientSession object at 0x7ef66e364b90\u003e\n"}
+,{"stream_name":"stdout","time":1264.368436604,"data":"engine_tokenizer = \u003cengineharness.workloads.HubTokenizer object at 0x7ef67f6df770\u003e\n"}
+,{"stream_name":"stdout","time":1264.368440683,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368447249,"data":"    @pytest.mark.capacity\n"}
+,{"stream_name":"stdout","time":1264.368451084,"data":"    async def test_a_burst_of_requests_is_served_without_errors(\n"}
+,{"stream_name":"stdout","time":1264.368454938,"data":"        request, harness_settings, harness_report, engine_session, engine_tokenizer\n"}
+,{"stream_name":"stdout","time":1264.368458907,"data":"    ) -\u003e None:\n"}
+,{"stream_name":"stdout","time":1264.368462766,"data":"        spec = get_workload_spec(harness_settings.workload_scale, WORKLOAD_BURST)\n"}
+,{"stream_name":"stdout","time":1264.368466803,"data":"        requests = build_requests(spec, engine_tokenizer, harness_settings.seed)\n"}
+,{"stream_name":"stdout","time":1264.3684707,"data":"    \n"}
+,{"stream_name":"stdout","time":1264.368474317,"data":"        metrics = await run_concurrency_level(\n"}
+,{"stream_name":"stdout","time":1264.36847813,"data":"            engine_session, requests, len(requests), harness_settings.model_id, WORKLOAD_BURST\n"}
+,{"stream_name":"stdout","time":1264.368482089,"data":"        )\n"}
+,{"stream_name":"stdout","time":1264.368485791,"data":"        error_rate = metrics.error_count / metrics.request_count\n"}
+,{"stream_name":"stdout","time":1264.368489627,"data":"    \n"}
+,{"stream_name":"stdout","time":1264.368493157,"data":"        harness_report.record(\n"}
+,{"stream_name":"stdout","time":1264.368496814,"data":"            request.node.nodeid,\n"}
+,{"stream_name":"stdout","time":1264.36850046,"data":"            SuiteResult(\n"}
+,{"stream_name":"stdout","time":1264.368504156,"data":"                SUITE_CAPACITY,\n"}
+,{"stream_name":"stdout","time":1264.368507872,"data":"                WORKLOAD_BURST,\n"}
+,{"stream_name":"stdout","time":1264.368511331,"data":"                f\"{metrics.error_count}/{metrics.request_count} errors, \"\n"}
+,{"stream_name":"stdout","time":1264.368515069,"data":"                f\"{metrics.total_tokens_per_second:.1f} tok/s\",\n"}
+,{"stream_name":"stdout","time":1264.368519057,"data":"                f\"error rate \u003c= {harness_settings.capacity_max_error_rate:.0%}\",\n"}
+,{"stream_name":"stdout","time":1264.368523113,"data":"                f\"E2E p99 {metrics.end_to_end.p99_ms:.0f} ms\",\n"}
+,{"stream_name":"stdout","time":1264.368526923,"data":"            ),\n"}
+,{"stream_name":"stdout","time":1264.368530589,"data":"        )\n"}
+,{"stream_name":"stdout","time":1264.36853497,"data":"\u003e       assert error_rate \u003c= harness_settings.capacity_max_error_rate\n"}
+,{"stream_name":"stdout","time":1264.368539096,"data":"E       AssertionError: assert 1.0 \u003c= 0.0\n"}
+,{"stream_name":"stdout","time":1264.368543102,"data":"E        +  where 0.0 = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths']).capacity_max_error_rate\n"}
+,{"stream_name":"stdout","time":1264.368547749,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368551298,"data":"tests/suites/test_concurrency_and_capacity.py:70: AssertionError\n"}
+,{"stream_name":"stdout","time":1264.36855501,"data":"________________ test_long_prompts_do_not_freeze_other_streams _________________\n"}
+,{"stream_name":"stdout","time":1264.368558836,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368562354,"data":"request = \u003cFixtureRequest for \u003cFunction test_long_prompts_do_not_freeze_other_streams\u003e\u003e\n"}
+,{"stream_name":"stdout","time":1264.368566474,"data":"harness_settings = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths'])\n"}
+,{"stream_name":"stdout","time":1264.368574872,"data":"harness_report = \u003cengineharness.report_writer.HarnessReport object at 0x7ef67f6dd400\u003e\n"}
+,{"stream_name":"stdout","time":1264.368579148,"data":"engine_session = \u003caiohttp.client.ClientSession object at 0x7ef66e367390\u003e\n"}
+,{"stream_name":"stdout","time":1264.368583037,"data":"engine_tokenizer = \u003cengineharness.workloads.HubTokenizer object at 0x7ef67f6df770\u003e\n"}
+,{"stream_name":"stdout","time":1264.368586863,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368590328,"data":"    @pytest.mark.long_prompt_interference\n"}
+,{"stream_name":"stdout","time":1264.368594071,"data":"    async def test_long_prompts_do_not_freeze_other_streams(\n"}
+,{"stream_name":"stdout","time":1264.368597884,"data":"        request, harness_settings, harness_report, engine_session, engine_tokenizer\n"}
+,{"stream_name":"stdout","time":1264.36860166,"data":"    ) -\u003e None:\n"}
+,{"stream_name":"stdout","time":1264.368605355,"data":"        scale = harness_settings.workload_scale\n"}
+,{"stream_name":"stdout","time":1264.368609101,"data":"        chats = build_requests(\n"}
+,{"stream_name":"stdout","time":1264.368612806,"data":"            get_workload_spec(scale, WORKLOAD_SHORT_CHAT), engine_tokenizer, harness_settings.seed\n"}
+,{"stream_name":"stdout","time":1264.36861651,"data":"        )[: INTERFERENCE_USERS * 2]\n"}
+,{"stream_name":"stdout","time":1264.368620085,"data":"        long_prompts = build_requests(\n"}
+,{"stream_name":"stdout","time":1264.36862397,"data":"            get_workload_spec(scale, WORKLOAD_LONG_PROMPT), engine_tokenizer, harness_settings.seed\n"}
+,{"stream_name":"stdout","time":1264.368627714,"data":"        )\n"}
+,{"stream_name":"stdout","time":1264.368631352,"data":"        model_id = harness_settings.model_id\n"}
+,{"stream_name":"stdout","time":1264.368635164,"data":"    \n"}
+,{"stream_name":"stdout","time":1264.368638753,"data":"        alone = await run_concurrency_level(\n"}
+,{"stream_name":"stdout","time":1264.368642595,"data":"            engine_session, chats, INTERFERENCE_USERS, model_id, WORKLOAD_SHORT_CHAT\n"}
+,{"stream_name":"stdout","time":1264.368646586,"data":"        )\n"}
+,{"stream_name":"stdout","time":1264.368650262,"data":"        disturbed, _ = await asyncio.gather(\n"}
+,{"stream_name":"stdout","time":1264.368653998,"data":"            run_concurrency_level(\n"}
+,{"stream_name":"stdout","time":1264.36865791,"data":"                engine_session, chats, INTERFERENCE_USERS, model_id, WORKLOAD_SHORT_CHAT\n"}
+,{"stream_name":"stdout","time":1264.368662577,"data":"            ),\n"}
+,{"stream_name":"stdout","time":1264.368666324,"data":"            run_concurrency_level(engine_session, long_prompts, 1, model_id, WORKLOAD_LONG_PROMPT),\n"}
+,{"stream_name":"stdout","time":1264.368670341,"data":"        )\n"}
+,{"stream_name":"stdout","time":1264.368674097,"data":"        ratio = disturbed.inter_token.p99_ms / max(alone.inter_token.p99_ms, 1e-9)\n"}
+,{"stream_name":"stdout","time":1264.368677963,"data":"    \n"}
+,{"stream_name":"stdout","time":1264.368681564,"data":"        harness_report.record(\n"}
+,{"stream_name":"stdout","time":1264.368685019,"data":"            request.node.nodeid,\n"}
+,{"stream_name":"stdout","time":1264.36868845,"data":"            SuiteResult(\n"}
+,{"stream_name":"stdout","time":1264.368691968,"data":"                SUITE_LONG_PROMPT_INTERFERENCE,\n"}
+,{"stream_name":"stdout","time":1264.368695658,"data":"                WORKLOAD_SHORT_CHAT,\n"}
+,{"stream_name":"stdout","time":1264.368699235,"data":"                f\"ITL p99 {alone.inter_token.p99_ms:.0f} -\u003e {disturbed.inter_token.p99_ms:.0f} ms \"\n"}
+,{"stream_name":"stdout","time":1264.368706864,"data":"                f\"({ratio:.1f}x)\",\n"}
+,{"stream_name":"stdout","time":1264.368710952,"data":"                f\"\u003c= {harness_settings.interference_max_itl_ratio:.1f}x\",\n"}
+,{"stream_name":"stdout","time":1264.368715483,"data":"                f\"{len(long_prompts)} long prompts arriving\",\n"}
+,{"stream_name":"stdout","time":1264.368719653,"data":"            ),\n"}
+,{"stream_name":"stdout","time":1264.368723396,"data":"        )\n"}
+,{"stream_name":"stdout","time":1264.368727044,"data":"        assert alone.error_count == disturbed.error_count == 0\n"}
+,{"stream_name":"stdout","time":1264.368730928,"data":"\u003e       assert ratio \u003c= harness_settings.interference_max_itl_ratio\n"}
+,{"stream_name":"stdout","time":1264.368734904,"data":"E       AssertionError: assert 2.1064172277478557 \u003c= 2.0\n"}
+,{"stream_name":"stdout","time":1264.368738972,"data":"E        +  where 2.0 = HarnessSettings(target_url='http://localhost:8000', model_id='Qwen/Qwen3-0.6B', tokenizer_id='Qwen/Qwen3-0.6B', worklo...=PosixPath('/kaggle/working/results'), sweep_workloads=['short_chat', 'long_prompt', 'shared_prefix', 'mixed_lengths']).interference_max_itl_ratio\n"}
+,{"stream_name":"stdout","time":1264.368743778,"data":"\n"}
+,{"stream_name":"stdout","time":1264.36874731,"data":"tests/suites/test_prefix_and_interference.py:95: AssertionError\n"}
+,{"stream_name":"stdout","time":1264.368751198,"data":"=============================== warnings summary ===============================\n"}
+,{"stream_name":"stdout","time":1264.368755099,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.368759122,"data":"  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'\n"}
+,{"stream_name":"stdout","time":1264.368763277,"data":"    prop = Group((name + Suppress(\"=\") + comma_separated(value)) | oneOf(_CONSTANTS))\n"}
+,{"stream_name":"stdout","time":1264.368767416,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368770956,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.368774921,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.368778797,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.368782699,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.368787218,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.36879112,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.36879511,"data":"  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'\n"}
+,{"stream_name":"stdout","time":1264.368799277,"data":"    parse = parser.parseString(pattern)\n"}
+,{"stream_name":"stdout","time":1264.368803102,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368806612,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.368810579,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.36881458,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.368822155,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.36882615,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.368830104,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.368834054,"data":"  /usr/local/lib/python3.13/dist-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'\n"}
+,{"stream_name":"stdout","time":1264.368838242,"data":"    parser.resetCache()\n"}
+,{"stream_name":"stdout","time":1264.368841956,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368845485,"data":"tests/suites/test_concurrency_and_capacity.py::test_total_throughput_grows_with_users\n"}
+,{"stream_name":"stdout","time":1264.368849415,"data":"  /usr/local/lib/python3.13/dist-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'\n"}
+,{"stream_name":"stdout","time":1264.36885358,"data":"    ParserElement.enablePackrat()\n"}
+,{"stream_name":"stdout","time":1264.368857312,"data":"\n"}
+,{"stream_name":"stdout","time":1264.368860906,"data":"-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n"}
+,{"stream_name":"stdout","time":1264.368864808,"data":"=========================== short test summary info ============================\n"}
+,{"stream_name":"stdout","time":1264.368868761,"data":"SKIPPED [1] tests/suites/test_equivalence.py:13: suite does not apply to this phase\n"}
+,{"stream_name":"stdout","time":1264.36887276,"data":"======= 3 failed, 3 passed, 1 skipped, 14 warnings in 1201.59s (0:20:01) =======\n"}
+,{"stream_name":"stdout","time":1264.36887668,"data":" \n"}
+,{"stream_name":"stdout","time":3581.245437537,"data":"$ /usr/bin/python3 -m engineharness sweep-all -\u003e 1\n"}
+,{"stream_name":"stdout","time":3581.245515042,"data":"wrote /kaggle/working/results/short_chat/concurrency-sweep.md\n"}
+,{"stream_name":"stdout","time":3581.245524869,"data":"wrote /kaggle/working/results/short_chat/metrics.json\n"}
+,{"stream_name":"stdout","time":3581.245529943,"data":"wrote /kaggle/working/results/short_chat/concurrency-sweep.png\n"}
+,{"stream_name":"stdout","time":3581.245535025,"data":"wrote /kaggle/working/results/long_prompt/concurrency-sweep.md\n"}
+,{"stream_name":"stdout","time":3581.245539824,"data":"wrote /kaggle/working/results/long_prompt/metrics.json\n"}
+,{"stream_name":"stdout","time":3581.245544736,"data":"wrote /kaggle/working/results/long_prompt/concurrency-sweep.png\n"}
+,{"stream_name":"stdout","time":3581.245550124,"data":"wrote /kaggle/working/results/shared_prefix/concurrency-sweep.md\n"}
+,{"stream_name":"stdout","time":3581.245555066,"data":"wrote /kaggle/working/results/shared_prefix/metrics.json\n"}
+,{"stream_name":"stdout","time":3581.245560227,"data":"wrote /kaggle/working/results/shared_prefix/concurrency-sweep.png\n"}
+,{"stream_name":"stdout","time":3581.245584109,"data":"wrote /kaggle/working/results/mixed_lengths/concurrency-sweep.md\n"}
+,{"stream_name":"stdout","time":3581.24558968,"data":"wrote /kaggle/working/results/mixed_lengths/metrics.json\n"}
+,{"stream_name":"stdout","time":3581.245594509,"data":"wrote /kaggle/working/results/mixed_lengths/concurrency-sweep.png\n"}
+,{"stream_name":"stdout","time":3581.245599928,"data":" Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.\n"}
+,{"stream_name":"stdout","time":3581.24561386,"data":"\n"}
+,{"stream_name":"stdout","time":3592.990366799,"data":"$ /usr/bin/python3 -m nanoengine.step_timing --output-dir /kaggle/working/results -\u003e 0\n"}
+,{"stream_name":"stdout","time":3592.990403966,"data":" \n"}
+,{"stream_name":"stdout","time":3592.990407394,"data":"Fetching 4 files:   0%|          | 0/4 [00:00\u003c?, ?it/s]\n"}
+,{"stream_name":"stdout","time":3592.990411215,"data":"Fetching 4 files: 100%|██████████| 4/4 [00:00\u003c00:00, 1203.10it/s]\n"}
+,{"stream_name":"stdout","time":3592.99042669,"data":"\n"}
+,{"stream_name":"stdout","time":3623.085069814,"data":"$ /usr/bin/python3 -m nanoengine.quality_eval --output-dir /kaggle/working/results -\u003e 0\n"}
+,{"stream_name":"stdout","time":3623.085138013,"data":" \n"}
+,{"stream_name":"stdout","time":3623.085145239,"data":"Fetching 4 files:   0%|          | 0/4 [00:00\u003c?, ?it/s]\n"}
+,{"stream_name":"stdout","time":3623.085150722,"data":"Fetching 4 files: 100%|██████████| 4/4 [00:00\u003c00:00, 1031.87it/s]\n"}
+,{"stream_name":"stdout","time":3623.085156809,"data":"\n"}
+,{"stream_name":"stdout","time":3623.911697672,"data":"ges/starlette/responses.py\", line 250, in stream_response\n"}
+,{"stream_name":"stdout","time":3623.911731678,"data":"    async for chunk in self.body_iterator:\n"}
+,{"stream_name":"stdout","time":3623.911737441,"data":"    ...\u003c2 lines\u003e...\n"}
+,{"stream_name":"stdout","time":3623.91174228,"data":"        await send({\"type\": \"http.response.body\", \"body\": chunk, \"more_body\": True})\n"}
+,{"stream_name":"stdout","time":3623.911747001,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/api/completion_responses.py\", line 39, in stream_completion_chunks\n"}
+,{"stream_name":"stdout","time":3623.91175678,"data":"    async for event in token_events:\n"}
+,{"stream_name":"stdout","time":3623.911760292,"data":"    ...\u003c12 lines\u003e...\n"}
+,{"stream_name":"stdout","time":3623.911763593,"data":"        )\n"}
+,{"stream_name":"stdout","time":3623.911766462,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/scheduling/request_queue.py\", line 29, in stream_token_events\n"}
+,{"stream_name":"stdout","time":3623.911769568,"data":"    raise event\n"}
+,{"stream_name":"stdout","time":3623.91177238,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/scheduling/batch_engine_loop.py\", line 97, in _run_step\n"}
+,{"stream_name":"stdout","time":3623.911775458,"data":"    new_tokens = await asyncio.to_thread(self._execute_plan, plan)\n"}
+,{"stream_name":"stdout","time":3623.911778354,"data":"                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":3623.911781201,"data":"  File \"/usr/lib/python3.13/asyncio/threads.py\", line 26, in to_thread\n"}
+,{"stream_name":"stdout","time":3623.911784132,"data":"    return await loop.run_in_executor(None, func_call)\n"}
+,{"stream_name":"stdout","time":3623.911786936,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":3623.911790256,"data":"  File \"/usr/lib/python3.13/concurrent/futures/thread.py\", line 59, in run\n"}
+,{"stream_name":"stdout","time":3623.911810743,"data":"    result = self.fn(*self.args, **self.kwargs)\n"}
+,{"stream_name":"stdout","time":3623.911816095,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/scheduling/batch_engine_loop.py\", line 119, in _execute_plan\n"}
+,{"stream_name":"stdout","time":3623.911821003,"data":"    token_ids = self._runner.run_step(plan.sequences)\n"}
+,{"stream_name":"stdout","time":3623.911825783,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/utils/_contextlib.py\", line 124, in decorate_context\n"}
+,{"stream_name":"stdout","time":3623.911843704,"data":"    return func(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":3623.911847476,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/generation/model_runner.py\", line 44, in run_step\n"}
+,{"stream_name":"stdout","time":3623.911851006,"data":"    logits = self._run_eager(sequences, token_counts)\n"}
+,{"stream_name":"stdout","time":3623.911856181,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/engine/generation/model_runner.py\", line 68, in _run_eager\n"}
+,{"stream_name":"stdout","time":3623.911863493,"data":"    hidden_states = self._model(inputs.token_ids, inputs.context)\n"}
+,{"stream_name":"stdout","time":3623.911865896,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":3623.911868233,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":3623.911870515,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":3623.911872666,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":3623.911874974,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":3623.911878751,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py\", line 195, in forward\n"}
+,{"stream_name":"stdout","time":3623.911881169,"data":"    return self.model(token_ids, context)\n"}
+,{"stream_name":"stdout","time":3623.911883349,"data":"           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":3623.91188549,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":3623.911887799,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":3623.911890104,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":3623.911892244,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":3623.911894567,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":3623.91189672,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py\", line 177, in forward\n"}
+,{"stream_name":"stdout","time":3623.911899063,"data":"    hidden_states = layer(hidden_states, cos, sin, context)\n"}
+,{"stream_name":"stdout","time":3623.911901265,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":3623.911903539,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":3623.911905673,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":3623.911907904,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":3623.911910181,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":3623.911912353,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py\", line 147, in forward\n"}
+,{"stream_name":"stdout","time":3623.911914619,"data":"    hidden_states = hidden_states + self.self_attn(\n"}
+,{"stream_name":"stdout","time":3623.911916877,"data":"                                    ~~~~~~~~~~~~~~^\n"}
+,{"stream_name":"stdout","time":3623.911919029,"data":"        self.input_layernorm(hidden_states), cos, sin, context\n"}
+,{"stream_name":"stdout","time":3623.911921212,"data":"        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":3623.911926274,"data":"    )\n"}
+,{"stream_name":"stdout","time":3623.911928471,"data":"    ^\n"}
+,{"stream_name":"stdout","time":3623.911930566,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1779, in _wrapped_call_impl\n"}
+,{"stream_name":"stdout","time":3623.911932896,"data":"    return self._call_impl(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":3623.911935061,"data":"           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":3623.911937228,"data":"  File \"/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py\", line 1790, in _call_impl\n"}
+,{"stream_name":"stdout","time":3623.911939492,"data":"    return forward_call(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":3623.911941672,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/models/qwen3.py\", line 113, in forward\n"}
+,{"stream_name":"stdout","time":3623.911943956,"data":"    attention = run_cached_attention(queries, keys, values, context, self.layer_index)\n"}
+,{"stream_name":"stdout","time":3623.911946276,"data":"  File \"/tmp/repo/nanoengine/src/nanoengine/models/attention_context.py\", line 103, in run_cached_attention\n"}
+,{"stream_name":"stdout","time":3623.911948586,"data":"    return functional.scaled_dot_product_attention(\n"}
+,{"stream_name":"stdout","time":3623.911950774,"data":"           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n"}
+,{"stream_name":"stdout","time":3623.911953184,"data":"        queries,\n"}
+,{"stream_name":"stdout","time":3623.911955731,"data":"        ^^^^^^^^\n"}
+,{"stream_name":"stdout","time":3623.911957858,"data":"    ...\u003c3 lines\u003e...\n"}
+,{"stream_name":"stdout","time":3623.911960149,"data":"        enable_gqa=True,\n"}
+,{"stream_name":"stdout","time":3623.911962304,"data":"        ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":3623.911964439,"data":"    )\n"}
+,{"stream_name":"stdout","time":3623.911966522,"data":"    ^\n"}
+,{"stream_name":"stdout","time":3623.911974978,"data":"torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 38.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 10.81 MiB is free. Including non-PyTorch memory, this process has 14.55 GiB memory in use. Of the allocated memory 13.92 GiB is allocated by PyTorch, and 495.53 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)\n"}
+,{"stream_name":"stdout","time":3623.911981056,"data":"INFO:     127.0.0.1:45676 - \"GET /metrics HTTP/1.1\" 200 OK\n"}
+,{"stream_name":"stdout","time":3623.911983582,"data":"INFO:     Shutting down\n"}
+,{"stream_name":"stdout","time":3623.911985711,"data":"INFO:     Waiting for application shutdown.\n"}
+,{"stream_name":"stdout","time":3623.911987857,"data":"INFO:     Application shutdown complete.\n"}
+,{"stream_name":"stdout","time":3623.911989986,"data":"INFO:     Finished server process [134]\n"}
+,{"stream_name":"stdout","time":3623.911992119,"data":"\n"}
+,{"stream_name":"stdout","time":3623.911994181,"data":"# Harness report: http://localhost:8000\n"}
+,{"stream_name":"stdout","time":3623.911996606,"data":"\n"}
+,{"stream_name":"stdout","time":3623.911998659,"data":"Generated 2026-10-18 18:25 UTC.\n"}
+,{"stream_name":"stdout","time":3623.912000795,"data":"\n"}
+,{"stream_name":"stdout","time":3623.912002941,"data":"| Suite | Workload | Measured | Threshold | Outcome | Detail |\n"}
+,{"stream_name":"stdout","time":3623.912005186,"data":"|---|---|---|---|---|---|\n"}
+,{"stream_name":"stdout","time":3623.912009642,"data":"| concurrency | short_chat | 17.4 -\u003e 0.0 tok/s (0.0x) | \u003e= 4.0x at 64 users | FAIL | levels [1, 4, 16, 64] |\n"}
+,{"stream_name":"stdout","time":3623.912012183,"data":"| capacity | burst | 64/64 errors, 0.0 tok/s | error rate \u003c= 0% | FAIL | E2E p99 0 ms |\n"}
+,{"stream_name":"stdout","time":3623.912014576,"data":"| prefix_reuse | shared_prefix | TTFT p50 181 -\u003e 61 ms (67% lower) | \u003e= 50% lower | PASS | 512 shared of 544 tokens |\n"}
+,{"stream_name":"stdout","time":3623.912016988,"data":"| long_prompt_interference | short_chat | ITL p99 65 -\u003e 138 ms (2.1x) | \u003c= 2.0x | FAIL | 16 long prompts arriving |\n"}
+,{"stream_name":"stdout","time":3623.912019464,"data":"| streaming | short_chat | 128 chunks, 128 tokens | 128 tokens, [DONE] | PASS | ok |\n"}
+,{"stream_name":"stdout","time":3623.912021792,"data":"| latency | short_chat | TTFT p50 59 ms, ITL p50 56.6 ms, 17.6 tok/s | no errors | PASS | 4 requests at 1 user |\n"}
+,{"stream_name":"stdout","time":3623.912024084,"data":"\n"}
+,{"stream_name":"stderr","time":3626.338066444,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":3626.33811221,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":3626.510963053,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":3626.510986467,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":3627.246890939,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":3627.320954459,"data":"[NbConvertApp] Writing 35741 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":3629.708993831,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":3630.218886831,"data":"[NbConvertApp] Writing 317827 bytes to __results__.html\n"}
+]

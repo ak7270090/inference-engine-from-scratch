@@ -89,11 +89,13 @@ class DecodeGraphRunner:
     def num_captured_graphs(self) -> int:
         return sum(1 for graph in self._graphs.values() if graph.graph is not None)
 
+    @torch.inference_mode()
     def capture_all_buckets(self) -> None:
         """Capture every bucket up front, so no request waits for a capture while being served.
 
         Largest first: graphs share one memory pool, and smaller graphs can then reuse the
-        memory the largest one needed.
+        memory the largest one needed. Under inference mode: with autograd on, each graph's
+        output would keep every layer's activations alive for a backward pass that never comes.
         """
         for batch_size in reversed(self.batch_buckets):
             for context_length in reversed(self.context_buckets):
@@ -101,8 +103,8 @@ class DecodeGraphRunner:
                     self._create_graph(batch_size, context_length)
 
     def can_run(self, sequences: list[Sequence]) -> bool:
-        """Decode steps (one uncached token each) that fit a bucket. On a GPU the bucket must
-        also have a captured graph: padding a step without one would only add work."""
+        """Decode steps (one uncached token each) that fit a bucket. On a GPU, a bucket whose
+        capture failed or was skipped decodes eagerly: padding it would only add work."""
         fits = (
             len(sequences) <= self.batch_buckets[-1]
             and max(sequence.num_tokens for sequence in sequences) <= self.context_buckets[-1]
@@ -111,7 +113,7 @@ class DecodeGraphRunner:
         if not fits or not self._uses_cuda_graphs:
             return fits
         bucket = self._bucket_for(sequences)
-        return bucket in self._graphs and self._graphs[bucket].graph is not None
+        return bucket not in self._graphs or self._graphs[bucket].graph is not None
 
     def _bucket_for(self, sequences: list[Sequence]) -> tuple[int, int]:
         batch_size = round_up_to_bucket(len(sequences), self.batch_buckets)

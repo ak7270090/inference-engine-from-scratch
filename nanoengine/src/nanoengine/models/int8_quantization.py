@@ -37,8 +37,9 @@ def quantize_vectors(values: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
 class Int8Linear(nn.Module):
     """Weight-only int8 linear layer; activations stay in the model's dtype.
 
-    In plain PyTorch the int8 weight is turned back into the activation dtype for each matmul,
-    so this saves memory, not time: fast int8 matmuls need fused kernels.
+    In plain PyTorch the weight is dequantized (``int8 * scale``) for each matmul, so this
+    saves memory, not time: fast int8 matmuls need fused kernels. Scaling after the matmul
+    instead would overflow fp16, since raw int8 values reach 127.
     """
 
     def __init__(self, weight_int8: torch.Tensor, weight_scale: torch.Tensor) -> None:
@@ -52,7 +53,8 @@ class Int8Linear(nn.Module):
         return cls(weight_int8, weight_scale.squeeze(-1))
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        return functional.linear(inputs, self.weight_int8.to(inputs.dtype)) * self.weight_scale
+        weight = self.weight_int8.to(inputs.dtype) * self.weight_scale[:, None]
+        return functional.linear(inputs, weight)
 
 
 def quantize_linear_layers(model: "Qwen3ForCausalLM") -> int:

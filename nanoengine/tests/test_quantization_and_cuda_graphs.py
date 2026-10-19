@@ -10,6 +10,7 @@ from torch import nn
 from nanoengine import quality_eval
 from nanoengine.config import EngineSettings
 from nanoengine.engine.generation.cuda_graph_runner import (
+    DecodeGraph,
     DecodeGraphRunner,
     build_buckets,
     build_context_buckets,
@@ -252,7 +253,7 @@ def test_a_capture_that_would_eat_the_reserve_is_skipped(tiny_model, monkeypatch
     assert sequences[0].num_generated_tokens == 3
 
 
-def test_on_a_gpu_only_captured_buckets_take_the_graph_path(tiny_model, monkeypatch) -> None:
+def test_on_a_gpu_a_failed_bucket_decodes_eagerly(tiny_model, monkeypatch) -> None:
     runner = build_runner_with_graph_path(tiny_model, use_graph_path=True)
     graphs = runner.decode_graphs
     sequences = [Sequence.from_request(build_request("r", PROMPTS[0]), CPU)]
@@ -260,4 +261,34 @@ def test_on_a_gpu_only_captured_buckets_take_the_graph_path(tiny_model, monkeypa
     sequences[0].num_cached_tokens = sequences[0].num_tokens - 1
     monkeypatch.setattr(graphs, "_uses_cuda_graphs", True)
 
-    assert not graphs.can_run(sequences)
+    untried = graphs.can_run(sequences)
+    graphs._graphs[graphs._bucket_for(sequences)] = graphs._graphs.get(
+        graphs._bucket_for(sequences)
+    ) or DecodeGraph(*(torch.zeros(1, 1, dtype=torch.long) for _ in range(5)))
+    failed = graphs.can_run(sequences)
+
+    assert untried and not failed
+
+
+def test_int8_linear_does_not_overflow_in_float16() -> None:
+    torch.manual_seed(1)
+    linear = nn.Linear(256, 64, bias=False).half()
+    inputs = (torch.randn(4, 256) * 60).half()
+
+    outputs = Int8Linear.from_linear(linear)(inputs)
+
+    assert torch.isfinite(outputs).all()
+    expected = linear(inputs).float()
+    assert (outputs.float() - expected).norm() / expected.norm() < 0.02
+
+
+def test_capture_runs_without_autograd(tiny_model) -> None:
+    runner = build_runner_with_graph_path(tiny_model, use_graph_path=True)
+
+    runner.decode_graphs.capture_all_buckets()
+
+    assert all(
+        not graph.logits.requires_grad
+        for graph in runner.decode_graphs._graphs.values()
+        if graph.logits is not None
+    )
