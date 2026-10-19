@@ -19,7 +19,7 @@ from nanoengine.engine.metrics import EngineMetrics
 from nanoengine.engine.runtime import create_engine
 from nanoengine.engine.scheduling.batch_scheduler import ChunkedPrefillScheduler
 from nanoengine.engine.sequence_state import Sequence
-from tests.test_batch_engine_loop import (
+from tests.engine.test_batch_engine_loop import (
     build_request,
     build_settings,
     collect_token_ids,

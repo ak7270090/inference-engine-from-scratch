@@ -73,4 +73,4 @@ next batch instead of interrupting running streams. They pay with their own wait
 
 Full results: [static T4](../results/phase-03-static-batching-t4/results/harness-report.md) ·
 [continuous T4](../results/phase-03-continuous-batching-t4/results/harness-report.md) ·
-[before the sync fix](../results/phase-03-continuous-batching-t4-before-sync-fix/results/harness-report.md).
+[before the sync fix](../results/archive/phase-03-continuous-batching-t4-before-sync-fix/results/harness-report.md).

@@ -1,4 +1,4 @@
-"""Time one decode step at growing sequence lengths: ``python -m nanoengine.step_timing``.
+"""Time one decode step at growing lengths: ``python -m nanoengine.benchmarks.step_timing``.
 
 Without a KV cache (``kv_cache=none``) every step recomputes the whole sequence, so step time grows
 with length. With a KV cache a step computes one token and only reads the cached keys and values.
@@ -177,7 +177,7 @@ def write_step_timings(
 
 
 def main(arguments: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(prog="nanoengine.step_timing")
+    parser = argparse.ArgumentParser(prog="nanoengine.benchmarks.step_timing")
     parser.add_argument("--lengths", type=int, nargs="+", default=list(DEFAULT_SEQUENCE_LENGTHS))
     parser.add_argument("--repeats", type=int, default=DEFAULT_REPEATS)
     parser.add_argument("--output-dir", type=Path, default=Path("results"))

@@ -21,7 +21,7 @@ this phase: `git checkout phase-01`.
 | `engine/naive_generator.py` (`kv_cache=none`) | The no-cache loop: forward the full sequence, sample, append, repeat |
 | `engine/engine_loop.py` (`scheduler=serial`) | One background task serves one request at a time. Model steps run in a worker thread so streaming keeps flowing |
 | `api/routes.py`, `api/completion_responses.py` | `/v1/completions` (JSON or SSE, token-ID or text prompts, `ignore_eos`, `stream_options.include_usage`), `/v1/models`, `/healthz`, `/metrics` |
-| `step_timing.py` | Measures one step's time at growing sequence lengths |
+| `benchmarks/step_timing.py` | Measures one step's time at growing sequence lengths |
 
 ## Correctness
 
@@ -122,14 +122,14 @@ Setup: [nanoengine/README.md](../../nanoengine/README.md). The `phase-01-naive` 
 cd nanoengine
 $env:NANOENGINE_ENV_FILE="profiles/phase-01-naive.env"
 .\.venv\Scripts\python.exe -m nanoengine
-.\.venv\Scripts\python.exe -m nanoengine.step_timing --output-dir ../docs/results/phase-01-naive-cpu
+.\.venv\Scripts\python.exe -m nanoengine.benchmarks.step_timing --output-dir ../docs/results/phase-01-naive-cpu
 
 cd ../engine-harness
-$env:HARNESS_ENV_FILE="../nanoengine/harness/phase-01-naive-cpu.env"
+$env:HARNESS_ENV_FILE="expectations/phase-01-naive-cpu.env"
 .\.venv\Scripts\python.exe -m pytest tests/suites -rxXs
 ```
 
-On a Kaggle T4 (fp16): `python kaggle/run_on_kaggle.py phase-01-naive --owner <kaggle-user>`.
+On a Kaggle T4 (fp16): `python scripts/kaggle/run_on_kaggle.py phase-01-naive --owner <kaggle-user>`.
 
 ## Expected harness outcomes
 

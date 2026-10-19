@@ -66,5 +66,5 @@ spare scratch slot with `index_copy_`, and no step waits.
 ![Harness suites against phase 2 on CPU](../images/phase-02/terminal-phase-02-kv-cache-harness-cpu.png)
 
 Full results: [T4](../results/phase-02-kv-cache-t4/results/harness-report.md) ·
-[T4 before the fix](../results/phase-02-kv-cache-t4-before-sync-fix/results/harness-report.md) ·
+[T4 before the fix](../results/archive/phase-02-kv-cache-t4-before-sync-fix/results/harness-report.md) ·
 [CPU](../results/phase-02-kv-cache-cpu/harness-report.md).

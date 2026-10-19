@@ -13,11 +13,10 @@ the layout of [nano-vllm](https://github.com/GeeeekExplorer/nano-vllm) and
 | Folder | What it is |
 |---|---|
 | [`nanoengine/`](nanoengine/README.md) | The engine: `models/`, `engine/`, `api/`; `profiles/` set the modes for each phase |
-| `engine-harness/` | Workloads, streaming client, latency metrics, pytest suites, locust load test |
-| `kaggle/` | Notebook builder and `run_on_kaggle.py`: run a profile (or vLLM) and the harness on a free T4 |
-| `scripts/` | Render terminal output and SSE streams as README screenshots |
+| `engine-harness/` | Workloads, streaming client, latency metrics, pytest suites, `locustfile.py`; `expectations/` holds what each phase and vLLM should pass, per device |
+| `scripts/` | `kaggle/` (notebook builder and `run_on_kaggle.py`: run a profile or vLLM and the harness on a free T4), progress charts, terminal and SSE screenshots |
 | `docs/phases/` | One write-up per phase: what changed, results, screenshots |
-| `docs/results/` | Harness reports and charts per phase and device |
+| `docs/results/` | Harness reports and charts per phase and device; `archive/` keeps failed and superseded runs that the phase write-ups refer to |
 
 ## Phases
 
@@ -85,7 +84,7 @@ cd engine-harness
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 .\.venv\Scripts\python.exe -m pytest                      # unit tests, 80% coverage
-$env:HARNESS_ENV_FILE="../nanoengine/harness/phase-01-naive-cpu.env"
+$env:HARNESS_ENV_FILE="expectations/phase-01-naive-cpu.env"
 .\.venv\Scripts\python.exe -m pytest tests/suites -rxXs   # suites against a running engine
 .\.venv\Scripts\python.exe -m engineharness sweep short_chat
 ```
@@ -105,8 +104,8 @@ Create a Kaggle API token and put it in `.env` as `KAGGLE_API_TOKEN` (the file i
 Then push your commits and run:
 
 ```powershell
-python kaggle/run_on_kaggle.py vllm --owner <kaggle-user>
-python kaggle/run_on_kaggle.py phase-01-naive --owner <kaggle-user>
+python scripts/kaggle/run_on_kaggle.py vllm --owner <kaggle-user>
+python scripts/kaggle/run_on_kaggle.py phase-01-naive --owner <kaggle-user>
 ```
 
 The results are saved to `docs/results/<target>-t4/`.

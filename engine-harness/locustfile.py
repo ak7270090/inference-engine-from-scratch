@@ -1,4 +1,4 @@
-"""Open-ended load test: ``locust -f load/locustfile.py --host http://localhost:8000``.
+"""Open-ended load test: ``locust -f locustfile.py --host http://localhost:8000``.
 
 Each simulated user streams short-chat completions back to back; Locust reports time to first
 token as the request time and the full stream as a separate ``stream`` entry.

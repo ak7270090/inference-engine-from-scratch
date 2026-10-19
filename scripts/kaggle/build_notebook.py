@@ -1,4 +1,4 @@
-"""Write ``kaggle/run_phase.ipynb``: ``python kaggle/build_notebook.py``.
+"""Write ``scripts/kaggle/run_phase.ipynb``: ``python scripts/kaggle/build_notebook.py``.
 
 The notebook clones the repo, starts vLLM or nanoengine with a profile, runs the harness suites and
 sweeps, and leaves the results in ``/kaggle/working``. ``run_on_kaggle.py`` fills in the
@@ -11,7 +11,7 @@ from pathlib import Path
 NOTEBOOK_PATH = Path(__file__).resolve().parent / "run_phase.ipynb"
 
 CELLS = [
-    """# Filled in by kaggle/run_on_kaggle.py before each push.
+    """# Filled in by scripts/kaggle/run_on_kaggle.py before each push.
 TARGET = "{{TARGET}}"
 REPO_REF = "{{REPO_REF}}"
 REPO_URL = "https://github.com/ak7270090/inference-engine-from-scratch.git"
@@ -49,7 +49,7 @@ if TARGET == "vllm":
     server_command = [
         "vllm", "serve", MODEL_ID, "--dtype", "half", "--port", "8000", "--max-model-len", "4096",
     ]
-    harness_env_file = f"{REPO_DIR}/engine-harness/baselines/vllm-t4.env"
+    harness_env_file = f"{REPO_DIR}/engine-harness/expectations/vllm-t4.env"
 else:
     # TARGET is a profile such as phase-01-naive: engine modes + harness expectations
     run_and_print([*pip_install, "-e", f"{REPO_DIR}/nanoengine"])
@@ -59,7 +59,7 @@ else:
         NANOENGINE_DEVICE="cuda",
         NANOENGINE_DTYPE="float16",
     )
-    harness_env_file = f"{REPO_DIR}/nanoengine/harness/{TARGET}-t4.env"''',
+    harness_env_file = f"{REPO_DIR}/engine-harness/expectations/{TARGET}-t4.env"''',
     """server_log = open(f"{WORK_DIR}/server.log", "w")  # noqa: SIM115 - stays open for the server
 server = subprocess.Popen(
     server_command,
@@ -91,7 +91,13 @@ if run_and_print(wait_command, cwd=harness_dir, env=harness_env) == 0:
 benchmark_env = {**os.environ, "CUDA_VISIBLE_DEVICES": "1"}
 if TARGET != "vllm":
     run_and_print(
-        [sys.executable, "-m", "nanoengine.step_timing", "--output-dir", f"{WORK_DIR}/results"],
+        [
+            sys.executable,
+            "-m",
+            "nanoengine.benchmarks.step_timing",
+            "--output-dir",
+            f"{WORK_DIR}/results",
+        ],
         env=benchmark_env,
     )
 if TARGET.startswith("phase-06"):
@@ -99,7 +105,7 @@ if TARGET.startswith("phase-06"):
         [
             sys.executable,
             "-m",
-            "nanoengine.speculative_benchmark",
+            "nanoengine.benchmarks.speculative",
             "--output-dir",
             f"{WORK_DIR}/results",
         ],
@@ -107,7 +113,13 @@ if TARGET.startswith("phase-06"):
     )
 if "int8" in TARGET:
     run_and_print(
-        [sys.executable, "-m", "nanoengine.quality_eval", "--output-dir", f"{WORK_DIR}/results"],
+        [
+            sys.executable,
+            "-m",
+            "nanoengine.benchmarks.quality",
+            "--output-dir",
+            f"{WORK_DIR}/results",
+        ],
         env=benchmark_env,
     )""",
     """server.terminate()

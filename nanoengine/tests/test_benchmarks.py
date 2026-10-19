@@ -3,8 +3,8 @@ from pathlib import Path
 import pytest
 import torch
 
-from nanoengine import step_timing
-from nanoengine.step_timing import (
+from nanoengine.benchmarks import step_timing
+from nanoengine.benchmarks.step_timing import (
     CachedDecodeStepBenchmark,
     NaiveStepBenchmark,
     measure_step_timings,

@@ -1,4 +1,4 @@
-"""What int8 costs in quality: ``python -m nanoengine.quality_eval --output-dir results``.
+"""What int8 costs in quality: ``python -m nanoengine.benchmarks.quality --output-dir results``.
 
 Compares the configured engine (``quantization``, ``kv_cache_dtype``) against the same model in
 full precision: perplexity on a fixed text, and how many greedy tokens stay the same.
@@ -127,7 +127,7 @@ def render_quality_markdown(report: QualityReport) -> str:
 
 
 def main(arguments: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(prog="nanoengine.quality_eval")
+    parser = argparse.ArgumentParser(prog="nanoengine.benchmarks.quality")
     parser.add_argument("--output-dir", type=Path, default=Path("results"))
     parsed = parser.parse_args(arguments)
     settings = load_engine_settings()

@@ -3,7 +3,8 @@
 import pytest
 import torch
 
-from nanoengine import speculative_benchmark
+from nanoengine.benchmarks import speculative as speculative_benchmark
+from nanoengine.benchmarks.speculative import render_results_markdown, run_benchmark
 from nanoengine.config import EngineSettings
 from nanoengine.engine.interface import GenerationRequest, SamplingParams
 from nanoengine.engine.metrics import EngineMetrics
@@ -12,9 +13,8 @@ from nanoengine.engine.sampling import create_sampling_generator
 from nanoengine.engine.sequence_state import Sequence
 from nanoengine.engine.speculative.proposers import NgramProposer, Proposal
 from nanoengine.engine.speculative.verifier import verify_proposal
-from nanoengine.speculative_benchmark import render_results_markdown, run_benchmark
 from tests.conftest import MODEL_SEED, build_tiny_model
-from tests.test_batch_engine_loop import (
+from tests.engine.test_batch_engine_loop import (
     PROMPTS,
     build_settings,
     expected_greedy_tokens,

@@ -64,5 +64,5 @@ also helps here, most for single users:
 ![Unit tests after phases 2–4](../images/phase-04/terminal-unit-tests.png)
 
 Full results: [T4](../results/phase-04-paged-t4/results/harness-report.md) ·
-[T4 before the fix](../results/phase-04-paged-t4-before-sync-fix/results/harness-report.md) ·
+[T4 before the fix](../results/archive/phase-04-paged-t4-before-sync-fix/results/harness-report.md) ·
 [CPU](../results/phase-04-paged-cpu/harness-report.md).

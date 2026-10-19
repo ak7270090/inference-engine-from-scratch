@@ -1,7 +1,7 @@
 """Run one engine and the harness on a free Kaggle T4, then download the results.
 
-    python kaggle/run_on_kaggle.py vllm --owner <kaggle-user>
-    python kaggle/run_on_kaggle.py phase-01-naive --owner <kaggle-user>
+    python scripts/kaggle/run_on_kaggle.py vllm --owner <kaggle-user>
+    python scripts/kaggle/run_on_kaggle.py phase-01-naive --owner <kaggle-user>
 
 Needs the ``kaggle`` CLI and ``KAGGLE_API_TOKEN`` (read from the repo's ``.env`` if not set).
 The notebook clones the public repo, so push your commits first.
@@ -17,7 +17,7 @@ import sys
 import time
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 NOTEBOOK_TEMPLATE = Path(__file__).resolve().parent / "run_phase.ipynb"
 BUILD_DIR = Path(__file__).resolve().parent / "build"
 RESULTS_ROOT = REPO_ROOT / "docs" / "results"

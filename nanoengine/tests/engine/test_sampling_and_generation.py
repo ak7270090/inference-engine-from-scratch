@@ -6,7 +6,7 @@ from nanoengine.constants import FINISH_REASON_LENGTH, FINISH_REASON_STOP
 from nanoengine.engine.generation.naive_generator import NaiveGenerator
 from nanoengine.engine.interface import GenerationRequest, SamplingParams
 from nanoengine.engine.sampling import apply_top_p, create_sampling_generator, sample_next_token
-from tests.test_qwen3_model import build_hugging_face_twin
+from tests.models.test_qwen3_model import build_hugging_face_twin
 
 CPU = torch.device("cpu")
 

@@ -1,5 +1,5 @@
 """Single-user speed with and without speculative decoding:
-``python -m nanoengine.speculative_benchmark --output-dir results``.
+``python -m nanoengine.benchmarks.speculative --output-dir results``.
 
 Uses the configured ``speculative`` proposer and target model. Two prompt styles: a code edit
 (the answer copies much of the prompt, where guesses are often right) and free chat text.
@@ -135,7 +135,7 @@ def render_results_markdown(results: list[SpeculativeResult], settings: EngineSe
 
 
 def main(arguments: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(prog="nanoengine.speculative_benchmark")
+    parser = argparse.ArgumentParser(prog="nanoengine.benchmarks.speculative")
     parser.add_argument("--output-dir", type=Path, default=Path("results"))
     parsed = parser.parse_args(arguments)
     settings = load_engine_settings()

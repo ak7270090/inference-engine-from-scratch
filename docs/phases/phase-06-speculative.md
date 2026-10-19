@@ -19,7 +19,7 @@ guesses in **one** pass and keeps a prefix of them. So one target pass can yield
 | `engine/speculative/proposers.py` | `NgramProposer`: if the last tokens appeared before, guess what followed them. `DraftModelProposer`: a small model with its own KV cache, rolled back to the tokens the target kept |
 | `engine/speculative/verifier.py` | Keeps guess `i` with probability `min(1, p/q)`. At the first rejection it redraws from `max(0, p − q)`. If every guess is kept, a bonus token comes from the target's last row. Greedy decoding reduces this to "keep the guesses that equal the target's argmax" |
 | `engine/speculative/speculative_generator.py` | The serial loop. Rejected guesses' KV entries are dropped by moving `num_cached_tokens` back; later steps overwrite them |
-| `speculative_benchmark.py` | One user's speed with and without speculation, on a code-edit prompt and a chat prompt |
+| `benchmarks/speculative.py` | One user's speed with and without speculation, on a code-edit prompt and a chat prompt |
 
 ## Results on a Kaggle T4 (fp16, one user)
 

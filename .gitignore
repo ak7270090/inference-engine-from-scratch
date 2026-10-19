@@ -22,4 +22,4 @@ htmlcov/
 hf-cache/
 
 # kaggle push folders and downloaded notebook logs
-kaggle/build/
+scripts/kaggle/build/

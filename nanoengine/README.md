@@ -21,10 +21,9 @@ nanoengine/
 │   │   └── interface, sampling, sequence_state, metrics, runtime (builds the engine per mode)
 │   ├── api/           routes.py, schemas.py, completion_responses.py
 │   ├── app.py, config.py, constants.py, __main__.py
-│   ├── step_timing.py, quality_eval.py, speculative_benchmark.py   (benchmark CLIs)
+│   ├── benchmarks/    step_timing, quality (int8), speculative: ``python -m nanoengine.benchmarks.<name>``
 ├── profiles/          engine modes per phase (phase-01-naive.env, ...)
-├── harness/           harness expectations per phase and device (phase-01-naive-cpu.env, ...)
-└── tests/
+└── tests/             mirrors the package: models/, engine/, plus API and benchmark tests
 ```
 
 ## Modes
@@ -47,7 +46,7 @@ startup:
 - speculative decoding needs `scheduler=serial` without the prefix cache
 
 Every full-precision mode is tested to give the same greedy tokens as recomputing each request
-alone. The int8 modes change some tokens by design; `quality_eval` measures by how much.
+alone. The int8 modes change some tokens by design; `nanoengine.benchmarks.quality` measures by how much.
 
 How one step works with a KV cache: the KV cache is a flat pool of token slots per layer. A
 contiguous cache gives each sequence a fixed range of slots; a paged cache gives it blocks of slots

@@ -7,7 +7,9 @@ import pytest
 import torch
 from torch import nn
 
-from nanoengine import quality_eval
+from nanoengine.benchmarks import quality as quality_eval
+from nanoengine.benchmarks.quality import evaluate_quality, render_quality_markdown
+from nanoengine.benchmarks.step_timing import CachedDecodeStepBenchmark, measure_step_timings
 from nanoengine.config import EngineSettings
 from nanoengine.engine.generation.cuda_graph_runner import (
     DecodeGraph,
@@ -28,17 +30,15 @@ from nanoengine.models.int8_quantization import (
     quantize_vectors,
 )
 from nanoengine.models.qwen3 import Qwen3Config
-from nanoengine.quality_eval import evaluate_quality, render_quality_markdown
-from nanoengine.step_timing import CachedDecodeStepBenchmark, measure_step_timings
 from tests.conftest import build_tiny_model
-from tests.test_batch_engine_loop import (
+from tests.engine.test_batch_engine_loop import (
     PROMPTS,
     build_request,
     build_settings,
     collect_token_ids,
     expected_greedy_tokens,
 )
-from tests.test_kv_cache import run_greedy
+from tests.engine.test_kv_cache import run_greedy
 
 CPU = torch.device("cpu")
 
