@@ -1,0 +1,8 @@
+{
+  "perplexity_full_precision": 66.67604819224309,
+  "perplexity_configured": 66.69926157285293,
+  "greedy_token_agreement": 0.1484375,
+  "identical_completions": 0,
+  "num_completions": 8,
+  "settings": "quantization=int8, kv_cache_dtype=int8"
+}

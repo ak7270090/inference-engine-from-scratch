@@ -31,7 +31,7 @@ Code at the end of each phase: `git checkout phase-NN`.
 | 4 | [Paged KV cache](docs/phases/phase-04-paged.md) | `kv_cache=paged` | done: 64 users in memory (vs 18), 1,028 tok/s |
 | 5 | [Prefix caching and chunked prefill](docs/phases/phase-05-prefix-chunked.md) | `prefix_cache=true`, `chunked_prefill=true` | done: TTFT 67% lower on shared prompts; throughput regression under investigation |
 | 6 | [Speculative decoding](docs/phases/phase-06-speculative.md) | `speculative=ngram\|draft` | done: n-gram 1.8–3.1x for one user |
-| 7 | int8 weights, int8 KV cache, CUDA graphs | `quantization=int8`, `kv_cache_dtype=int8`, `cuda_graphs=true` | built; T4 run in progress |
+| 7 | [CUDA graphs, int8 weights and KV cache](docs/phases/phase-07-int8-cuda-graphs.md) | `cuda_graphs=true`, `quantization=int8`, `kv_cache_dtype=int8` | done: one user 23 → 70 tok/s; int8 KV holds 1.97x tokens at +0.03% perplexity |
 
 ## Target to chase: vLLM on a Kaggle T4
 
@@ -62,14 +62,22 @@ results: [docs/results/vllm-t4/](docs/results/vllm-t4/results/harness-report.md)
 | Phase 2: KV cache | 27.3 | serial | 1 |
 | Phase 3: continuous batching | 26.0 | 394 | 18 |
 | Phase 4: paged KV cache | 26.7 | **1,028** | **64** |
-| Phase 6: n-gram speculation (serial) | **50.0** | serial | 1 |
+| Phase 5: prefix cache + chunked prefill | 23.4 | 602 | 64 |
+| Phase 6: n-gram speculation (serial) | 50.0 | serial | 1 |
+| Phase 7: + CUDA graphs (batches up to 8) | **70.2** | 617 | 64 |
+| Phase 7: + int8 weights and KV cache | 27.3 | 433 | 64 (in half the KV memory) |
 | vLLM 0.31.0 | 142.6 | 1,928 | 64 |
 
 ![short_chat throughput as users grow, every phase and vLLM](docs/images/progress-throughput-short-chat.png)
 
-At 64 users the engine reaches 53% of vLLM's throughput. One user gets 19% of vLLM's speed, because
-each step carries about 33 ms of kernel-launch overhead that vLLM removes with CUDA graphs and
-fused kernels (phase 7).
+Where the engine stands against vLLM on the same GPU:
+- **One user:** 49% of vLLM's speed, up from 20%. CUDA graphs removed most of the per-step launch
+  overhead (33 → 13 ms per step).
+- **64 users:** 53% of vLLM's throughput (phase 4). The rest is kernels: vLLM's paged attention reads
+  KV blocks in place, while this engine copies each sequence's cache into a padded tensor every
+  step.
+
+![One decode step on a T4: naive, KV cache, CUDA graphs](docs/images/progress-step-time.png)
 
 ## Every engine speaks the same API
 
