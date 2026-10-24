@@ -9,8 +9,7 @@ greedy outputs of this phase.
 
 ## What is inside
 
-Modules added in this phase (paths under `nanoengine/src/nanoengine/`). Code at the end of
-this phase: `git checkout phase-01`.
+Modules added in this phase (paths under `nanoengine/src/nanoengine/`).
 
 | Module | Job |
 |---|---|

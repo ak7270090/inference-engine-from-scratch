@@ -2,7 +2,6 @@
 
 **Profile:** `phase-05-prefix-chunked`. It runs phase 4 (paged KV cache, continuous batching,
 4 GB budget) with `prefix_cache=true`, `chunked_prefill=true` and `max_num_batched_tokens=256`.
-**Code at the end of this phase:** `git checkout phase-05`.
 
 ![Phase 5](../images/plan-phase-5-prefix-chunked.png)
 

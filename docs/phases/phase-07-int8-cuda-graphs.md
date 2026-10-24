@@ -4,8 +4,6 @@
 - `phase-07-cuda-graphs`: phase 5 plus `cuda_graphs=true`.
 - `phase-07-int8-cuda-graphs`: the same plus `quantization=int8` and `kv_cache_dtype=int8`.
 
-**Code at the end of this phase:** `git checkout phase-07`.
-
 ![Phase 7](../images/plan-phase-7-quantization.png)
 
 ## What changed
@@ -22,7 +20,7 @@
 **CUDA graphs are the biggest single speed-up of the project.** A decode step with 128 tokens of
 context drops from 33 ms to 13.3 ms. The plan asked for at least 30% less; this is 60%.
 
-![Step time against sequence length: naive, KV cache, CUDA graphs](../images/progress-step-time.png)
+![Time per decode step as the text grows: no KV cache, KV cache, CUDA graph](../images/progress-step-time.png)
 
 | short_chat on a T4 | Phase 5 | **Phase 7a: CUDA graphs** | Phase 7b: + int8 | vLLM |
 |---|---|---|---|---|

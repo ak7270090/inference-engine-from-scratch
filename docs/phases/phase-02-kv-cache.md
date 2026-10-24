@@ -1,7 +1,6 @@
 # Phase 2: KV cache
 
 **Profile:** `phase-02-kv-cache` (`kv_cache=contiguous`, `scheduler=serial`).
-**Code at the end of this phase:** `git checkout phase-02`.
 
 Phase 1 recomputes every earlier token for each new token. Phase 2 keeps every layer's keys and
 values in a cache instead. The prompt is processed once (prefill), then each step feeds only the
@@ -28,7 +27,7 @@ pool sizes in phases 3 and 4 match this formula exactly.
 **Decode step time no longer grows with length.** It is flat at about 33 ms, against phase 1's
 102 ms at 1,024 tokens. The plan's criterion (512 tokens within 20% of 16 tokens) is met.
 
-![Step time against sequence length: naive vs KV cache](../images/progress-step-time.png)
+![Time per decode step as the text grows: no KV cache, KV cache, CUDA graph](../images/progress-step-time.png)
 
 | One user | Phase 1 (no cache) | Phase 2 (KV cache) | |
 |---|---|---|---|

@@ -5,7 +5,6 @@
 - `phase-06-draft`: a Qwen3-1.7B target with a Qwen3-0.6B draft.
 
 Both use `scheduler=serial` and 4 guesses per step.
-**Code at the end of this phase:** `git checkout phase-06`.
 
 A cheap proposer guesses the next k tokens. The target model scores the last real token plus all k
 guesses in **one** pass and keeps a prefix of them. So one target pass can yield several tokens.
@@ -30,7 +29,7 @@ guesses in **one** pass and keeps a prefix of them. So one target pass can yield
 | 0.6B draft → 1.7B | code edit | 27.6 | 24.2 | 0.88x | 84% | 4.13 |
 | 0.6B draft → 1.7B | chat | 27.7 | 17.5 | 0.63x | 54% | 3.05 |
 
-![Speed-up from speculative decoding](../images/progress-speculative.png)
+![Tokens/s for one user with and without speculative decoding](../images/progress-speculative.png)
 
 **n-gram guesses are free and work well when the answer copies the prompt.** Code edits get 3x;
 the plan's criterion (at least 1.5x on a repetitive workload) is met. In the harness, a single

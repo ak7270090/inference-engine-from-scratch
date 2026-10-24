@@ -2,7 +2,6 @@
 
 **Profiles:** `phase-03-static-batching` and `phase-03-continuous-batching` (`kv_cache=contiguous`,
 `scheduler=static|continuous`, 4 GB KV budget, `max_model_len=2048`).
-**Code at the end of this phase:** `git checkout phase-03`.
 
 One background loop now serves many requests. Each step runs one model call for a whole batch of
 sequences, so the weights are read once for all of them.
@@ -30,7 +29,7 @@ generating it alone, in every mode.
 **Batching multiplies throughput.** At 16 users, continuous batching serves 393 tok/s, against 27
 tok/s for the serial phase 2.
 
-![short_chat throughput as users grow](../images/progress-throughput-short-chat.png)
+![short_chat: total tokens/s as users grow, every phase and vLLM](../images/progress-throughput-short-chat.png)
 
 **Static vs continuous is about answer lengths.** When every answer has the same length, static
 batching wastes nothing and is slightly faster, because there is less scheduling per step. When
@@ -44,7 +43,7 @@ newcomers wait seconds.
 | mixed_lengths, 16 users: time to first token p50 | 6.9 s | **0.085 s** |
 | mixed_lengths, 64 users: end-to-end p50 | 35.6 s | **29.0 s** |
 
-![mixed_lengths throughput as users grow](../images/progress-throughput-mixed-lengths.png)
+![mixed_lengths: tokens/s at 16 and 64 users, static vs continuous vs paged vs vLLM](../images/progress-throughput-mixed-lengths.png)
 
 The plan's criterion (continuous beats static on finish time for `mixed_lengths`) is met. The
 plan's other target, 3x phase 2's throughput at 32 users, is met with room to spare: 393 vs 27 tok/s

@@ -2,7 +2,6 @@
 
 **Profile:** `phase-04-paged` (`kv_cache=paged`, `scheduler=continuous`, the same 4 GB budget as
 phase 3, 16-token blocks).
-**Code at the end of this phase:** `git checkout phase-04`.
 
 The cache is cut into 16-token blocks. A sequence gets a new block only when its last one is full,
 and a block table maps its positions to blocks anywhere in the pool. This is the memory manager of
@@ -34,7 +33,7 @@ paged caches differ only in how slots are handed out.
 Paging fits 3.6x more sequences in the same memory, which beats the plan's 2x criterion. That gives
 2.6x the throughput, about **53% of vLLM's** 1,928 tok/s on the same GPU.
 
-![short_chat throughput as users grow](../images/progress-throughput-short-chat.png)
+![short_chat: total tokens/s as users grow, every phase and vLLM](../images/progress-throughput-short-chat.png)
 
 Still expected to fail at this phase (phase 5 targets both):
 - **No prefix reuse.** A shared 512-token system prompt is recomputed for every request.
