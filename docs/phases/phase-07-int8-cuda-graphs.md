@@ -12,7 +12,7 @@
 
 | Module | Job |
 |---|---|
-| `engine/generation/cuda_graph_runner.py` | Records a whole decode step as a CUDA graph and replays it with one launch, instead of about 500 small kernel launches from Python. Graphs need fixed shapes, so steps are padded to (batch size, context length) buckets. Padded rows write to the scratch slot. Buckets are captured at startup under inference mode |
+| `engine/generation/cuda_graph_runner.py` | Records a whole decode step as a CUDA graph and replays it with one launch, instead of about 1,800 small operation launches from Python. Graphs need fixed shapes, so steps are padded to (batch size, context length) buckets. Padded rows write to the scratch slot. Buckets are captured at startup under inference mode |
 | `models/int8_quantization.py` | `Int8Linear` stores every projection's weight as int8 with one scale per output row. `quantize_vectors` stores KV entries as int8 with one scale per (token, head) |
 | `models/attention_context.py` | Writes and reads the int8 KV cache. Grouped-query attention uses `enable_gqa` instead of copying each KV head per query head |
 | `benchmarks/quality.py` | Perplexity on a fixed text and greedy-token agreement, int8 against fp16 |

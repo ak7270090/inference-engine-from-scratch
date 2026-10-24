@@ -38,7 +38,8 @@ pool sizes in phases 3 and 4 match this formula exactly.
 | short_chat (64 in, 128 out): tok/s | 28.3 | 27.3 | the same |
 
 **Why short prompts gain nothing:** on a T4 a short sequence is not limited by attention math.
-The fixed cost of launching about 500 small kernels from Python takes about 33 ms per step. The
+Each step launches about 1,800 small operations from Python, one by one (about 64 per layer,
+counted with the PyTorch profiler). That fixed cost dominates the 33 ms per step. The
 cache removes the work that grows with length, so it helps long contexts, not short ones. Phase 7's
 CUDA graphs target that fixed cost.
 

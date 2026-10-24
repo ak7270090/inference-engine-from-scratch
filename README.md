@@ -18,7 +18,7 @@ Then, one by one, things break:
   1,000-token document freezes everyone else's stream while it's read, and 64 users with the same
   system prompt each compute it again.
 - **A single user is still slow**, because the GPU spends most of each step waiting for Python to
-  launch about 500 tiny kernels.
+  launch about 1,800 tiny operations, one by one.
 
 Each step raises the next question: what to cache, who runs in the next step, where memory goes,
 and what the GPU is really waiting on. This project answers them one at a time in one engine,
@@ -59,7 +59,7 @@ A request passes five stages. Each one exists because the simpler version broke:
   memory runs out the newest user is paused and recomputed later.
 - **Model runner:** packs every user's new tokens into one padded batch, tells attention which
   slots to write and read, runs Qwen3, and samples one token per user. Small decode steps are
-  replayed as a recorded CUDA graph: one launch instead of about 500.
+  replayed as a recorded CUDA graph: one launch instead of about 1,800.
 - **Qwen3 in plain PyTorch:** 28 layers with the same parameter names as the Hugging Face
   checkpoint, so the real weights load straight in. Weights can be stored as int8.
 

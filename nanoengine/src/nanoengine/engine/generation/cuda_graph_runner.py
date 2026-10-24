@@ -1,8 +1,9 @@
-"""CUDA graphs for decode steps: record one step's hundreds of kernel launches once, replay them.
+"""CUDA graphs for decode steps: record one step's ~1,800 operation launches once, replay them.
 
-A small model's decode step is mostly launch overhead: 28 layers × ~20 small kernels, each
-launched from Python. A CUDA graph records the whole step on the GPU and replays it with one
-launch. Graphs need fixed shapes and fixed memory, so each (batch size, context length) bucket
+A small model's decode step is mostly launch overhead: 28 layers × ~64 small operations (about
+1,800 per step, counted with the PyTorch profiler), each launched from Python. A CUDA graph
+records the whole step on the GPU and replays it with one launch. Graphs need fixed shapes and
+fixed memory, so each (batch size, context length) bucket
 gets its own graph and static input buffers; a step is padded up to its bucket. Padded rows write
 to the scratch slot and are ignored.
 
